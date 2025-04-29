@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import window_helpers as wh
 from dropdown import Dropdown
-from test import Circuit, ComponentIDGenerator
+from circuit import Circuit, ComponentIDGenerator
 
 class Window:
     def __init__(self, root, width=800, height=600):
@@ -24,7 +24,9 @@ class Window:
 
         self.canvas = tk.Canvas(self.frame, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
+        self.canvas.focus_set()
         self.canvas.bind("<Button-2>", self.handle_right_click)
+        self.canvas.bind("c", self.print_circuit)
 
         self.dropdown = Dropdown(self.root, self.frame, self.canvas, self.circuit, self.id_generator)
 
@@ -41,24 +43,18 @@ class Window:
 
     def resize_window(self, event):
         if event.widget == self.root:
-            
             self.height = event.height
             self.width = event.width
 
             if self.rect_id is not None:
                 self.canvas.coords(self.rect_id, 30, 10, self.width - 30, self.height - 50)
-
-    def place_input(self, event):
-        # print(event.x)
-        # wh.draw_circle(self.canvas, event.x, event.y, 20, fill="blue", outline="black", tag="input_circ")
-        # self.canvas.tag_raise("input_circ")
-        pass
-    
+                
 
     def handle_right_click(self, event):
         x, y = event.x, event.y
 
         if (0 <= x < 30 or self.width - 30 <= x < self.width) and 0 <= y <= self.height - 50:
             self.dropdown.show_context_menu(event)
-        
 
+    def print_circuit(self, event):
+        print(self.circuit.print_topological_order())

@@ -1,7 +1,7 @@
 import tkinter as tk
 from input import Input
 from output import Output
-from test import InputPin, OutputPin
+from circuit import InputPin, OutputPin
 
 class Dropdown():
     def __init__(self, root, frame, canvas, circuit, id_generator):
@@ -36,19 +36,19 @@ class Dropdown():
 
     def place_input(self):
         if self.last_event:
-            Input(self.canvas, 30, self.last_event.y)
-
             new_id = self.id_generator.gen_id()
-            input_circuit = InputPin(new_id, ["OUT"])
-            self.circuit.add_component(input_circuit)
+            input_pin = InputPin(new_id, ["OUT"])
+            self.circuit.add_component(input_pin)
+
+            Input(self.canvas, self.circuit, new_id, 30, self.last_event.y)
 
     def place_output(self):
         if self.last_event:
-            Output(self.canvas, self.frame.winfo_width() - 30, self.last_event.y)
-
             new_id = self.id_generator.gen_id()
-            output_circuit = OutputPin(new_id, ["IN"])
-            self.circuit.add_component(output_circuit)
+            output_pin = OutputPin(new_id, ["IN"])
+            self.circuit.add_component(output_pin)
+
+            Output(self.canvas, self.circuit, new_id, self.frame.winfo_width() - 30, self.last_event.y)
 
     def say_goodbye(self):
         print("Goodbye!")

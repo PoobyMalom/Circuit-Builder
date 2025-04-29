@@ -2,10 +2,12 @@ import tkinter as tk
 import window_helpers as wh
 
 class Input:
-    def __init__(self, canvas, x, y):
+    def __init__(self, canvas, circuit, id, x, y):
         self.state = 0
         self.radius = 15
         self.canvas = canvas
+        self.circuit = circuit
+        self.input_id = id
         self.x = x
         self.y = y
         self.dragging = False
@@ -56,7 +58,9 @@ class Input:
     def change_state(self):
         if self.state == 0:
             self.canvas.itemconfig(self.id, fill="green")
+            self.circuit.components[self.input_id].outputs['OUT'] = True
             self.state = 1
         elif self.state == 1:
             self.canvas.itemconfig(self.id, fill="red")
+            self.circuit.components[self.input_id].outputs['OUT'] = False
             self.state = 0
