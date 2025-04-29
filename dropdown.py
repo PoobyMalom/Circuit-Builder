@@ -4,8 +4,9 @@ from output import Output
 from circuit import InputPin, OutputPin
 
 class Dropdown():
-    def __init__(self, root, frame, canvas, circuit, id_generator):
+    def __init__(self, root, window, frame, canvas, circuit, id_generator):
         self.root = root
+        self.window = window
         self.frame = frame
         self.canvas = canvas
         self.circuit = circuit
@@ -40,7 +41,7 @@ class Dropdown():
             input_pin = InputPin(new_id, ["OUT"])
             self.circuit.add_component(input_pin)
 
-            Input(self.canvas, self.circuit, new_id, 30, self.last_event.y)
+            Input(self.canvas, self.window, self.circuit, new_id, 30, self.last_event.y)
 
     def place_output(self):
         if self.last_event:
@@ -48,7 +49,7 @@ class Dropdown():
             output_pin = OutputPin(new_id, ["IN"])
             self.circuit.add_component(output_pin)
 
-            Output(self.canvas, self.circuit, new_id, self.frame.winfo_width() - 30, self.last_event.y)
+            Output(self.canvas, self.window, self.circuit, new_id, self.frame.winfo_width() - 30, self.last_event.y)
 
     def say_goodbye(self):
         print("Goodbye!")

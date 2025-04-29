@@ -2,8 +2,9 @@ import tkinter as tk
 import window_helpers as wh
 
 class Input:
-    def __init__(self, canvas, circuit, id, x, y):
+    def __init__(self, canvas, window, circuit, id, x, y):
         self.state = 0
+        self.window = window
         self.radius = 15
         self.canvas = canvas
         self.circuit = circuit
@@ -20,6 +21,7 @@ class Input:
         canvas.tag_bind(self.id, "<ButtonPress-1>", self.start_drag)
         canvas.tag_bind(self.id, "<B1-Motion>", self.drag)
         canvas.tag_bind(self.id, "<ButtonRelease-1>", self.stop_drag)
+        canvas.tag_bind(self.id, "<Button-2>", self.place_wire)
     
     def create_input(self, x, y, radius):
         return wh.draw_circle(self.canvas, x, y, radius, fill='red', outline='black')
@@ -64,3 +66,6 @@ class Input:
             self.canvas.itemconfig(self.id, fill="red")
             self.circuit.components[self.input_id].outputs['OUT'] = False
             self.state = 0
+
+    def place_wire(self, event):
+        self.window.handle_wire_click(self.input_id, "OUTPUT", self.x, self.y)

@@ -28,7 +28,7 @@ class Window:
         self.canvas.bind("<Button-2>", self.handle_right_click)
         self.canvas.bind("c", self.print_circuit)
 
-        self.dropdown = Dropdown(self.root, self.frame, self.canvas, self.circuit, self.id_generator)
+        self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
 
         # Bottom toolbar (overlaps input/output bars)
         self.toolbar = tk.Frame(root, height=30, bg="darkgray")
@@ -48,7 +48,7 @@ class Window:
 
             if self.rect_id is not None:
                 self.canvas.coords(self.rect_id, 30, 10, self.width - 30, self.height - 50)
-                
+
 
     def handle_right_click(self, event):
         x, y = event.x, event.y
@@ -58,3 +58,6 @@ class Window:
 
     def print_circuit(self, event):
         print(self.circuit.print_topological_order())
+
+    def handle_wire_click(self, comp_id, pin, x, y):
+        print(comp_id)
