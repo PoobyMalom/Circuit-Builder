@@ -1,3 +1,7 @@
+# This file will be deleted at some point
+#
+# Describes a simple circuit with an input, output, and. This wouldnt really do anyhing lol
+
 from circuit import *   
 
 generator = ComponentIDGenerator()

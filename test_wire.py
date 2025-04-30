@@ -1,3 +1,8 @@
+# File will be deleted soon
+#
+# Used to test drawing wires on the window then moving all the logic inside
+# a specific wire file using GUICanvasWire
+
 import tkinter as tk
 from tkinter import ttk
 import window_helpers as wh

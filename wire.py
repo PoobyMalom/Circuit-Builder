@@ -1,6 +1,27 @@
+"""
+Filename: wire.py
+Description: Wire GUI elements
+
+Author: Toby Mallon
+Created: 4-28-2025
+"""
+
 import window_helpers as wh
 
 class GUICanvasWire:
+    """
+    Represents the GUI representation of a wire
+
+    Attributes:
+        canvas (tk.Canvas): Canvas to draw wire on
+        src_comp_id (str): String representing id of the input component
+        src_pin (str): String representing name of the input pin
+        dst_comp_id (str): String representing id of the output component
+        dst_pin (str): String representing name of the output pin
+        line_segs (list[tk.Line]): list of tkinter lines
+        curr_wire (tk.Line): id of the current wire being drawn
+        wire_pos (tuple(x, y)): Tuple representing the x and y position of the start of the current line segment
+    """
     def __init__(self, canvas, src_comp_id, src_pin, dst_comp_id, dst_pin):
         self.canvas = canvas
         self.src_comp_id = src_comp_id
@@ -12,11 +33,31 @@ class GUICanvasWire:
         self.wire_pos = (None, None)
 
     def create_wire(self, x, y):
+        """
+        Initialize wire line and starting position
+
+        Args:
+            x (int): X-position of line start
+            y (int): Y-position of line start
+
+        Returns:
+            None
+        """
         self.wire_pos = (x, y)
         self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], x, y, fill="black", width=2)
         self.canvas.tag_lower(self.curr_wire)
 
     def end_wire(self, x, y):
+        """
+        End wire line and add to line segments
+
+        Args:
+            x (int): X-position of line end
+            y (int): Y-position of line end
+
+        Returns:
+            None
+        """
         if abs(self.wire_pos[0] - x) < abs(self.wire_pos[1] - y):
             self.canvas.coords(self.curr_wire,
                             self.wire_pos[0], self.wire_pos[1],
@@ -33,6 +74,16 @@ class GUICanvasWire:
         self.wire_pos = (None, None)
 
     def draw_wire(self, x, y):
+        """
+        Continuously change line end coordinates while drawing
+
+        Args:
+            x (int): X-position of line end
+            y (int): Y-position of line end
+
+        Returns:
+            None
+        """
         if abs(self.wire_pos[0] - x) < abs(self.wire_pos[1] - y):
             self.canvas.coords(self.curr_wire, 
                                 self.wire_pos[0], self.wire_pos[1],
@@ -45,6 +96,16 @@ class GUICanvasWire:
             self.canvas.tag_lower(self.curr_wire)
         
     def curve_wire(self, x, y):
+        """
+        Start new line when line gets curved
+
+        Args:
+            x (int): X-position of line end
+            y (int): Y-position of line end
+
+        Returns:
+            None
+        """
         if abs(self.wire_pos[0] - x) < abs(self.wire_pos[1] - y):
             self.canvas.coords(self.curr_wire,
                             self.wire_pos[0], self.wire_pos[1],
