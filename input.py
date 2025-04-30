@@ -16,6 +16,8 @@ class Input:
         self.start_x = 0
         self.start_y = 0
 
+        self.wire = None
+
         self.id = self.create_input(x, y, self.radius)
         
         canvas.tag_bind(self.id, "<ButtonPress-1>", self.start_drag)
@@ -49,6 +51,21 @@ class Input:
                     self.x + self.radius, event.y + self.radius
                 )
 
+                if self.wire:
+                    _, _, x2, y2 = self.canvas.coords(self.wire.line_segs[0])
+                    self.canvas.coords(
+                        self.wire.line_segs[0],
+                        self.x, self.y,
+                        x2, self.y
+                    )
+                    if self.wire.line_segs[1]:
+                        _, _, x2_1, y2_1 = self.canvas.coords(self.wire.line_segs[1])
+                        self.canvas.coords(
+                            self.wire.line_segs[1],
+                            x2, y2,
+                            x2_1, y2_1        
+                        )
+
     def stop_drag(self, event):
         if not self.drag_started:
             # It was a click, not a drag
@@ -68,4 +85,4 @@ class Input:
             self.state = 0
 
     def place_wire(self, event):
-        self.window.handle_wire_click(self.input_id, "OUTPUT", self.x, self.y)
+        self.window.handle_wire_click(self, self.input_id, "OUT", self.x, self.y)

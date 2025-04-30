@@ -86,7 +86,7 @@ class Circuit:
         print("Circuit Topological Order:")
         for cid in sorted_order:
             comp = self.components[cid]
-            print(f"  • {comp.id} [{comp.type}] inputs: [{comp.inputs}], outputs: [{comp.outputs}]")
+            print(f"  • {comp.id} [{comp.type}] inputs: [{comp.inputs}], outputs: [{comp.outputs}], connections: [{comp.connections}]")
 
 
 

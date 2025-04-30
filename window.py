@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import window_helpers as wh
 from dropdown import Dropdown
-from circuit import Circuit, ComponentIDGenerator
+from circuit import Circuit, ComponentIDGenerator, Wire
+from wire import GUICanvasWire
 
 class Window:
     def __init__(self, root, width=800, height=600):
@@ -27,6 +28,8 @@ class Window:
         self.canvas.focus_set()
         self.canvas.bind("<Button-2>", self.handle_right_click)
         self.canvas.bind("c", self.print_circuit)
+        self.canvas.bind("<Motion>", self.draw_wire)
+        self.canvas.bind("b", self.curve_wire)
 
         self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
 
@@ -39,6 +42,10 @@ class Window:
         self.root.attributes("-topmost", True)
 
         self.rect_id = wh.draw_rect(self.canvas, 30, 10, self.width - 60, self.height - 50, outline="#444444", width=2)
+
+        self.wire_start = None
+        self.drawing_wire = False
+        self.curr_wire = None
 
 
     def resize_window(self, event):
@@ -59,5 +66,33 @@ class Window:
     def print_circuit(self, event):
         print(self.circuit.print_topological_order())
 
-    def handle_wire_click(self, comp_id, pin, x, y):
-        print(comp_id)
+    def handle_wire_click(self, comp, comp_id, pin, x, y):
+        if (not self.drawing_wire) and (pin == "OUT"):
+            self.wire_start = (comp_id, pin, x, y)
+            self.curr_wire = GUICanvasWire(self.canvas, comp_id, pin, None, None)
+            comp.wire = self.curr_wire
+            self.curr_wire.create_wire(x, y)
+            self.drawing_wire = True
+        else:
+            src_id, src_pin, x0, y0 = self.wire_start
+            dst_id, dst_pin = comp_id, pin
+
+            self.curr_wire.dst_pin = dst_id
+            self.curr_wire.dst_pin = dst_pin
+            self.curr_wire.end_wire(x, y)
+            comp.wire = self.curr_wire
+
+            wire = Wire(src_id, src_pin, dst_id, dst_pin)
+            self.circuit.connect(wire)
+
+            self.drawing_wire = False
+            self.curr_wire = None
+            self.wire_start = None
+
+    def draw_wire(self, event):
+        if self.drawing_wire and self.curr_wire:
+            self.curr_wire.draw_wire(event.x, event.y)
+
+    def curve_wire(self, event):
+        if self.drawing_wire and self.curr_wire:
+            self.curr_wire.curve_wire(event.x, event.y)
