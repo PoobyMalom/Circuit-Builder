@@ -49,9 +49,22 @@ def draw_line(canvas, x1, y1, x2, y2, **kwargs):
         y1 (int): Y-coordinate of the first point of the line
         x2 (int): X-coordinate of the last point of the line
         y2 (int): Y-coordinate of the last point of the line
-        **kwargs: Additional options passed to `canvas.create_oval` (e.g., fill, width)
+        **kwargs: Additional options passed to `canvas.create_line` (e.g., fill, width)
 
     Returns:
         Canvas line object
     """
     return canvas.create_line(x1, y1, x2, y2, **kwargs)
+
+def draw_text(canvas, x, y, text, **kwargs):
+    """
+    Draws text on given canvas
+
+    Args:
+        canvas (tk.Canvas): The canvas to draw on
+        x (int): X-coordinate of the center of the text
+        y (int): Y-coordinate of the center of the text
+        text (string): Text to be displayed on the canvas
+        **kwargs: Additional options passed to `canvas.create_text` (e.g., fill, font, width)
+    """
+    return canvas.create_text(x, y, text=text, **kwargs)

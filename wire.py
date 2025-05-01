@@ -73,6 +73,8 @@ class GUICanvasWire:
         self.curr_wire = None
         self.wire_pos = (None, None)
 
+        
+
     def draw_wire(self, x, y):
         """
         Continuously change line end coordinates while drawing

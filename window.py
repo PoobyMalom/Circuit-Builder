@@ -12,6 +12,7 @@ import window_helpers as wh
 from dropdown import Dropdown
 from circuit import Circuit, ComponentIDGenerator, Wire
 from wire import GUICanvasWire
+from andgate import AndGate 
 
 class Window:
     """
@@ -52,6 +53,7 @@ class Window:
         self.canvas.bind("c", self.print_circuit)
         self.canvas.bind("<Motion>", self.draw_wire)
         self.canvas.bind("b", self.curve_wire)
+        self.canvas.bind("a", self.test_and)
 
         self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
 
@@ -116,27 +118,36 @@ class Window:
             x (int): X-coordinate of the click.
             y (int): Y-coordinate of the click.
         """
-        if (not self.drawing_wire) and (pin == "OUT"):
-            self.wire_start = (comp_id, pin, x, y)
-            self.curr_wire = GUICanvasWire(self.canvas, comp_id, pin, None, None)
-            comp.wire = self.curr_wire
-            self.curr_wire.create_wire(x, y)
-            self.drawing_wire = True
+        if not self.drawing_wire:
+            if pin == "OUT":
+                self.wire_start = (comp_id, pin, x, y)
+                self.curr_wire = GUICanvasWire(self.canvas, comp_id, pin, None, None)
+                comp.wire = self.curr_wire
+                self.curr_wire.create_wire(x, y)
+                self.drawing_wire = True
+            else:
+                print("Cannot end a wire on an output pin.")
+                return
+
         else:
-            src_id, src_pin, x0, y0 = self.wire_start
-            dst_id, dst_pin = comp_id, pin
+            if pin == "IN":
+                src_id, src_pin, x0, y0 = self.wire_start
+                dst_id, dst_pin = comp_id, pin
 
-            self.curr_wire.dst_pin = dst_id
-            self.curr_wire.dst_pin = dst_pin
-            self.curr_wire.end_wire(x, y)
-            comp.wire = self.curr_wire
+                self.curr_wire.dst_pin = dst_id
+                self.curr_wire.dst_pin = dst_pin
+                self.curr_wire.end_wire(x, y)
+                comp.wire = self.curr_wire
 
-            wire = Wire(src_id, src_pin, dst_id, dst_pin)
-            self.circuit.connect(wire)
+                wire = Wire(src_id, src_pin, dst_id, dst_pin)
+                self.circuit.connect(wire)
 
-            self.drawing_wire = False
-            self.curr_wire = None
-            self.wire_start = None
+                self.drawing_wire = False
+                self.curr_wire = None
+                self.wire_start = None
+            else:
+                print("Cannot end a wire on an input pin.")
+                return
 
     def draw_wire(self, event):
         """
@@ -157,3 +168,6 @@ class Window:
         """
         if self.drawing_wire and self.curr_wire:
             self.curr_wire.curve_wire(event.x, event.y)
+
+    def test_and(self, event):
+        AndGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)

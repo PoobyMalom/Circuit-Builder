@@ -70,11 +70,7 @@ class Dropdown():
             None
         """
         if self.last_event:
-            new_id = self.id_generator.gen_id()
-            input_pin = InputPin(new_id, ["OUT"])
-            self.circuit.add_component(input_pin)
-
-            Input(self.canvas, self.window, self.circuit, new_id, 30, self.last_event.y)
+            Input(self.canvas, self.window, self.circuit, 30, self.last_event.y, 15, self.id_generator, True)
 
     def place_output(self):
         """
@@ -87,8 +83,4 @@ class Dropdown():
             None
         """
         if self.last_event:
-            new_id = self.id_generator.gen_id()
-            output_pin = OutputPin(new_id, ["IN"])
-            self.circuit.add_component(output_pin)
-
-            Output(self.canvas, self.window, self.circuit, new_id, self.frame.winfo_width() - 30, self.last_event.y)
+            Output(self.canvas, self.window, self.circuit, self.frame.winfo_width() - 30, self.last_event.y, 15, self.id_generator, True)

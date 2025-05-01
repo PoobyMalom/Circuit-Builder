@@ -8,6 +8,7 @@ Created: 4-28-2025
 
 import tkinter as tk
 import window_helpers as wh
+from circuit import OutputPin
 
 class Output:
     """
@@ -30,13 +31,15 @@ class Output:
         wire (Wire): wire object connecting output to component
         id (tk.oval): gui oval id
     """
-    def __init__(self, canvas, window, circuit, id, x, y):
+    def __init__(self, canvas, window, circuit, x, y, radius, id_generator, dragable):
         self.window = window
         self.state = 0
-        self.radius = 15
+        self.radius = radius
         self.canvas = canvas
         self.circuit = circuit
-        self.output_id = id
+        self.id_generator = id_generator
+        self.dragable = dragable
+        self.output_id = id_generator.gen_id()
         self.x = x
         self.y = y
         self.dragging = False
@@ -45,6 +48,9 @@ class Output:
         self.start_y = 0
 
         self.wire = None
+
+        self.output_pin = OutputPin(self.output_id, ["IN"])
+        self.circuit.add_component(self.output_pin)
 
         self.id = self.create_output(x, y, self.radius)
 
@@ -65,7 +71,7 @@ class Output:
         Returns:
             Tkinted oval object representing our output
         """
-        return wh.draw_circle(self.canvas, x, y, radius, fill='red', outline='black')
+        return wh.draw_circle(self.canvas, x, y, radius, fill='black', outline='white')
 
     def start_drag(self, event):
         """
@@ -77,10 +83,11 @@ class Output:
         Returns:
             none
         """
-        self.dragging = True
-        self.drag_started = False  # Reset
-        self.start_x = event.x
-        self.start_y = event.y
+        if self.dragable:
+            self.dragging = True
+            self.drag_started = False  # Reset
+            self.start_x = event.x
+            self.start_y = event.y
 
     def drag(self, event):
         """
@@ -150,11 +157,11 @@ class Output:
             None
         """
         if self.state == 0:
-            self.canvas.itemconfig(self.id, fill="green")
+            self.canvas.itemconfig(self.id, fill="blue")
             self.circuit.components[self.output_id].inputs['IN'] = True
             self.state = 1
         elif self.state == 1:
-            self.canvas.itemconfig(self.id, fill="red")
+            self.canvas.itemconfig(self.id, fill="black")
             self.circuit.components[self.output_id].inputs['IN'] = False
             self.state = 0
 
@@ -169,3 +176,19 @@ class Output:
             None
         """
         self.window.handle_wire_click(self, self.output_id, "IN", self.x, self.y)
+
+    def update_wires(self, event):
+        if self.wire:
+                    x1, y1, _, _ = self.canvas.coords(self.wire.line_segs[-1])
+                    self.canvas.coords(
+                        self.wire.line_segs[-1],
+                        x1, self.y,
+                        self.x, self.y
+                    )
+                    if len(self.wire.line_segs) > 2:
+                        x1_1, y1_1, _, _ = self.canvas.coords(self.wire.line_segs[-2])
+                        self.canvas.coords(
+                            self.wire.line_segs[-2],
+                            x1_1, y1_1,
+                            x1, y1        
+                        )
