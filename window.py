@@ -57,6 +57,8 @@ class Window:
         self.canvas.bind("a", self.test_and)
         self.canvas.bind("e", self.test_eval)
         self.canvas.bind("n", self.test_not)
+        self.canvas.bind("t", self.print_hovered)
+        
 
         self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
 
@@ -75,6 +77,7 @@ class Window:
         self.drawing_wire = False
         self.curr_wire = None
 
+        self.hovered_component = None
 
     def resize_window(self, event):
         """
@@ -100,8 +103,7 @@ class Window:
         """
         x, y = event.x, event.y
 
-        if (0 <= x < 30 or self.width - 30 <= x < self.width) and 0 <= y <= self.height - 50:
-            self.dropdown.show_context_menu(event)
+        self.dropdown.show_context_menu(event)
 
     def print_circuit(self, _):
         """
@@ -183,3 +185,6 @@ class Window:
 
     def test_not(self, event):
         NotGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)
+
+    def print_hovered(self, event):
+        print(self.hovered_component)

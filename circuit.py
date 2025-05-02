@@ -117,6 +117,9 @@ class Circuit:
             None
         """
         self.components[component.id] = component
+
+    def delete_component(self, component):
+        del self.components[component.id]
     
     def connect(self, wire):
         """

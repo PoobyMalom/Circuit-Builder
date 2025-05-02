@@ -55,6 +55,9 @@ class Dropdown():
 
         if event.x > self.frame.winfo_width() - 50:
             self.context_menu.add_command(label="Place Output", command=self.place_output)
+        if self.window.hovered_component:
+            if self.window.hovered_component.type == "AND":
+                self.context_menu.add_command(label="Delete Component", command=self.delete_component)
 
         self.context_menu.tk_popup(event.x_root, event.y_root)
 
@@ -109,3 +112,8 @@ class Dropdown():
                    is_input=True,
                    draggable=True
                    )
+            
+    def delete_component(self):
+        self.canvas.delete(f"{self.window.hovered_component.type}_{self.window.hovered_component.id}")
+        self.circuit.delete_component(self.window.hovered_component)
+        self.window.hovered_component = None

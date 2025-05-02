@@ -27,7 +27,6 @@ class AndGate:
 
         self.andgate = Component(self.id, "AND", {"A": False, "B": False}, {"OUT": False})
         self.circuit.add_component(self.andgate)
-        self.components.append("")
 
         self.input1 = GUIPin(canvas, window, circuit, x - self.width/2, y + self.height/4, self.pin_radius, self.andgate.id, "A", is_input=True, draggable=False)
         self.input2 = GUIPin(canvas, window, circuit, x - self.width/2, y - self.height/4, self.pin_radius, self.andgate.id, "B", is_input=True, draggable=False)
@@ -61,6 +60,14 @@ class AndGate:
         canvas.tag_bind(self.component_shapes[-1], "<ButtonPress-1>", self.start_drag)
         canvas.tag_bind(self.component_shapes[-1], "<B1-Motion>", self.drag)
         canvas.tag_bind(self.component_shapes[-1], "<ButtonRelease-1>", self.stop_drag)
+
+        for i in range(len(self.component_shapes)):
+            canvas.addtag_withtag(f"AND_{self.id}", self.component_shapes[i])
+            if self.components[i] == "":
+                canvas.addtag_withtag(f"AND_{self.id}_CLICKABLE", self.component_shapes[i])
+
+        canvas.tag_bind(f"AND_{self.id}_CLICKABLE", "<Enter>", self.handle_hover_enter)
+        canvas.tag_bind(f"AND_{self.id}_CLICKABLE", "<Leave>", self.handle_hover_leave)
 
 
     def start_drag(self, event):
@@ -129,3 +136,8 @@ class AndGate:
         self.dragging = False
         self.drag_started = False
         
+    def handle_hover_enter(self, event):
+        self.window.hovered_component = self.andgate
+
+    def handle_hover_leave(self, event):
+        self.window.hovered_component = None
