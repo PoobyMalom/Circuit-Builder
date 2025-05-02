@@ -1,7 +1,6 @@
 import window_helpers as wh
-from circuit import Component
-from input import Input
-from output import Output
+from circuit import Component, Wire
+from gui_pin import GUIPin
 
 class AndGate:
     def __init__(self, canvas, window, circuit, id_generator, x, y):
@@ -13,6 +12,7 @@ class AndGate:
         self.x = x
         self.y = y
         self.component_shapes = [] # List to keep track of all tkinter objects that make up the and gate
+        self.components = []
 
         self.width = 50
         self.height = 30
@@ -23,19 +23,31 @@ class AndGate:
 
         self.base = wh.draw_rect(canvas, x - self.width/2, y - self.height/2, self.width, self.height, fill="#247ec4")
         self.component_shapes.append(self.base)
-
-        self.input1 = Output(canvas, window, circuit, x - self.width/2, y + self.height/4, self.pin_radius, id_generator, False) #wh.draw_circle(canvas, x - self.width/2, y - self.height/4, self.pin_radius, fill="black")
-        self.input2 = Output(canvas, window, circuit, x - self.width/2, y - self.height/4, self.pin_radius, id_generator, False) #wh.draw_circle(canvas, x - self.width/2, y + self.height/4, self.pin_radius, fill="black")
-        self.component_shapes += [self.input1.id, self.input2.id]
-
-        self.output1 = Input(canvas, window, circuit, x + self.width/2, y, self.pin_radius, id_generator, False)  #wh.draw_circle(canvas, x + self.width/2, y, self.pin_radius, fill="black")
-        self.component_shapes.append(self.output1.id)
-
-        self.text = wh.draw_text(self.canvas, x, y, "AND", fill="#ffffff")
-        self.component_shapes.append(self.text)
+        self.components.append("")
 
         self.andgate = Component(self.id, "AND", {"A": False, "B": False}, {"OUT": False})
         self.circuit.add_component(self.andgate)
+        self.components.append("")
+
+        self.input1 = GUIPin(canvas, window, circuit, x - self.width/2, y + self.height/4, self.pin_radius, self.andgate.id, "A", is_input=True, draggable=False)
+        self.input2 = GUIPin(canvas, window, circuit, x - self.width/2, y - self.height/4, self.pin_radius, self.andgate.id, "B", is_input=True, draggable=False)
+        self.component_shapes += [self.input1.id, self.input2.id]
+        self.components += [self.input1, self.input2]
+
+        self.output1 = GUIPin(canvas, window, circuit, x + self.width/2, y, self.pin_radius, self.andgate.id, "OUT", is_input=False, draggable=False)  #wh.draw_circle(canvas, x + self.width/2, y, self.pin_radius, fill="black")
+        self.component_shapes.append(self.output1.id)
+        self.components.append(self.output1)
+
+        self.text = wh.draw_text(self.canvas, x, y, "AND", fill="#ffffff")
+        self.component_shapes.append(self.text)
+        self.components.append("")
+
+
+        
+        # print(self.input1.output_pin.id)
+        # print(self.input2.output_pin.id)
+        # print(self.andgate.id)
+        # self.circuit.connect(Wire(self.input1.output_pin.id, "OUT", self.andgate.id, "A"))
 
         self.dragging = False
         self.drag_started = False
@@ -93,12 +105,12 @@ class AndGate:
 
                 self.x = event.x
                 self.y = event.y
-                for item in self.component_shapes:
-                    self.canvas.move(item, -dx, -dy)
 
-                self.output1.update_wires(event)
-                self.input1.update_wires(event)
-                self.input2.update_wires(event)
+                for i in range(len(self.component_shapes)):
+                    self.canvas.move(self.component_shapes[i], -dx, -dy)
+                    if hasattr(self.components[i], "update_wires"):
+                        self.components[i].update_wires(event)
+
                     
 
     def stop_drag(self, _):

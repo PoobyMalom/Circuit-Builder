@@ -30,7 +30,23 @@ class Component:
         """
         TODO Implement computing circuit logic
         """
-        pass
+        if self.type == "AND":
+            self.outputs["OUT"] = self.inputs["A"] and self.inputs["B"]
+
+        elif self.type == "OR":
+            self.outputs["OUT"] = self.inputs["A"] or self.inputs["B"]
+
+        elif self.type == "NOT":
+            self.outputs["OUT"] = not self.inputs["IN"]
+
+        elif self.type == "INPUT":
+            pass
+
+        elif self.type == "OUTPUT":
+            pass
+
+    def __str__(self):
+        return f"  • {self.id} [{self.type}] inputs: [{self.inputs}], outputs: [{self.outputs}], connections: [{self.connections}]"
 
 class InputPin(Component):
     """
@@ -47,8 +63,6 @@ class InputPin(Component):
     def set_output(self, pin, value):
         self.outputs[pin] = value
 
-    def compute(self):
-        pass
 
 class OutputPin(Component):
     """
@@ -60,9 +74,6 @@ class OutputPin(Component):
     def __init__(self, id, input_pin):
         super().__init__(id, "OUTPUT", input_pin, [])
 
-    def compute(self):
-        print(f"[{self.id}] Output: {self.inputs}")
-        
 
 class Wire:
     """
@@ -90,7 +101,8 @@ class Circuit:
         components (dict): represents a dictionary of component id, component pairs
         wire (list): represents a list of all wires in the circuit
     """
-    def __init__(self):
+    def __init__(self, window):
+        self.window = window
         self.components = {}
         self.wires = []
 
@@ -120,6 +132,7 @@ class Circuit:
         src = self.components[wire.src_comp_id]
         dst = self.components[wire.dst_comp_id]
         src.connections[wire.src_pin].append((dst.id, wire.dst_pin))
+        
 
     def print_topological_order(self):
         """
@@ -167,6 +180,52 @@ class Circuit:
             comp = self.components[cid]
             print(f"  • {comp.id} [{comp.type}] inputs: [{comp.inputs}], outputs: [{comp.outputs}], connections: [{comp.connections}]")
 
+    def topological_sort(self):
+         # Build the adjacency list and in-degree count
+        graph = defaultdict(list)
+        in_degree = defaultdict(int)
+
+        # Initialize in-degrees to 0 for all components
+        for comp_id in self.components:
+            in_degree[comp_id] = 0
+
+        # Populate graph and in-degree based on wires
+        for wire in self.wires:
+            graph[wire.src_comp_id].append(wire.dst_comp_id)
+            in_degree[wire.dst_comp_id] += 1
+
+        # Kahn's algorithm: start with nodes with in-degree 0
+        queue = deque([cid for cid, deg in in_degree.items() if deg == 0])
+        sorted_order = []
+
+        while queue:
+            cid = queue.popleft()
+            sorted_order.append(cid)
+
+            for neighbor in graph[cid]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+
+        return sorted_order
+    
+    def evaluate(self):
+        for cid in self.topological_sort():
+            component = self.components[cid]
+            component.compute()
+            print(component)
+
+            for pin, output_value in component.outputs.items():
+                for (dst_id, dst_pin) in component.connections[pin]:
+                    self.components[dst_id].inputs[dst_pin] = output_value
+
+                    if self.window.wire_lookup is not None:
+                        key = (component.id, dst_id)
+                        gui_wire = self.window.wire_lookup.get(key)
+                        if gui_wire:
+                            gui_wire.update_color(output_value)
+
+        print("------------------------------------------------------------------- \n")
 
 
 class ComponentIDGenerator:

@@ -44,7 +44,7 @@ class GUICanvasWire:
             None
         """
         self.wire_pos = (x, y)
-        self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], x, y, fill="black", width=2)
+        self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], x, y, fill="black", width=3)
         self.canvas.tag_lower(self.curr_wire)
 
     def end_wire(self, x, y):
@@ -73,7 +73,7 @@ class GUICanvasWire:
         self.curr_wire = None
         self.wire_pos = (None, None)
 
-        
+
 
     def draw_wire(self, x, y):
         """
@@ -114,7 +114,7 @@ class GUICanvasWire:
                             self.wire_pos[0], y)
             self.wire_pos = (self.wire_pos[0], y)
             self.line_segs.append(self.curr_wire)
-            self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], self.wire_pos[0], y, fill="black", width=2)
+            self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], self.wire_pos[0], y, fill="black", width=3)
             self.canvas.tag_lower(self.curr_wire)
         else:
             self.canvas.coords(self.curr_wire,
@@ -122,7 +122,9 @@ class GUICanvasWire:
                             x, self.wire_pos[1])
             self.wire_pos = (x, self.wire_pos[1])
             self.line_segs.append(self.curr_wire)
-            self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], x, self.wire_pos[1], fill="black", width=2)
+            self.curr_wire = wh.draw_line(self.canvas, self.wire_pos[0], self.wire_pos[1], x, self.wire_pos[1], fill="black", width=3)
             self.canvas.tag_lower(self.curr_wire)
         
-    
+    def update_color(self, state):
+        for segment in self.line_segs:
+            self.canvas.itemconfig(segment, fill="green" if state else "gray")

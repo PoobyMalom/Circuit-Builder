@@ -7,9 +7,8 @@ Created: 4-28-2025
 """
 
 import tkinter as tk
-from input import Input
-from output import Output
 from circuit import InputPin, OutputPin
+from gui_pin import GUIPin
 
 class Dropdown():
     """
@@ -70,7 +69,20 @@ class Dropdown():
             None
         """
         if self.last_event:
-            Input(self.canvas, self.window, self.circuit, 30, self.last_event.y, 15, self.id_generator, True)
+            comp_id = self.id_generator.gen_id()
+            logic_input = InputPin(comp_id, ["OUT"])
+            self.circuit.add_component(logic_input)
+            GUIPin(self.canvas, 
+                   self.window, 
+                   self.circuit, 
+                   x=30, 
+                   y=self.last_event.y, 
+                   radius=15, 
+                   component_id=comp_id,
+                   pin_name="OUT",
+                   is_input=False,
+                   draggable=True
+                   )
 
     def place_output(self):
         """
@@ -83,4 +95,17 @@ class Dropdown():
             None
         """
         if self.last_event:
-            Output(self.canvas, self.window, self.circuit, self.frame.winfo_width() - 30, self.last_event.y, 15, self.id_generator, True)
+            comp_id = self.id_generator.gen_id()
+            logic_output = InputPin(comp_id, ["IN"])
+            self.circuit.add_component(logic_output)
+            GUIPin(self.canvas, 
+                   self.window, 
+                   self.circuit, 
+                   x=self.frame.winfo_width() - 30, 
+                   y=self.last_event.y, 
+                   radius=15, 
+                   component_id=comp_id,
+                   pin_name="IN",
+                   is_input=True,
+                   draggable=True
+                   )

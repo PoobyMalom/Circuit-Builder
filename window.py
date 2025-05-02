@@ -13,6 +13,7 @@ from dropdown import Dropdown
 from circuit import Circuit, ComponentIDGenerator, Wire
 from wire import GUICanvasWire
 from andgate import AndGate 
+from notgate import NotGate
 
 class Window:
     """
@@ -34,7 +35,7 @@ class Window:
         self.width = width
         self.height = height
 
-        self.circuit = Circuit()
+        self.circuit = Circuit(self)
         self.id_generator = ComponentIDGenerator()
 
         self.root.title("Circuit Builder")
@@ -54,6 +55,8 @@ class Window:
         self.canvas.bind("<Motion>", self.draw_wire)
         self.canvas.bind("b", self.curve_wire)
         self.canvas.bind("a", self.test_and)
+        self.canvas.bind("e", self.test_eval)
+        self.canvas.bind("n", self.test_not)
 
         self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
 
@@ -65,6 +68,8 @@ class Window:
         #self.root.lift()
         self.root.attributes("-topmost", True)
         self.rect_id = wh.draw_rect(self.canvas, 30, 10, self.width - 60, self.height - 50, outline="#444444", width=2)
+
+        self.wire_lookup = {}
 
         self.wire_start = None
         self.drawing_wire = False
@@ -119,7 +124,7 @@ class Window:
             y (int): Y-coordinate of the click.
         """
         if not self.drawing_wire:
-            if pin == "OUT":
+            if not comp.is_input:
                 self.wire_start = (comp_id, pin, x, y)
                 self.curr_wire = GUICanvasWire(self.canvas, comp_id, pin, None, None)
                 comp.wire = self.curr_wire
@@ -130,8 +135,8 @@ class Window:
                 return
 
         else:
-            if pin == "IN":
-                src_id, src_pin, x0, y0 = self.wire_start
+            if comp.is_input:
+                src_id, src_pin, _, _ = self.wire_start
                 dst_id, dst_pin = comp_id, pin
 
                 self.curr_wire.dst_pin = dst_id
@@ -141,6 +146,7 @@ class Window:
 
                 wire = Wire(src_id, src_pin, dst_id, dst_pin)
                 self.circuit.connect(wire)
+                self.wire_lookup[(src_id, dst_id)] = self.curr_wire
 
                 self.drawing_wire = False
                 self.curr_wire = None
@@ -171,3 +177,9 @@ class Window:
 
     def test_and(self, event):
         AndGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)
+
+    def test_eval(self, event):
+        self.circuit.evaluate()
+
+    def test_not(self, event):
+        NotGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)
