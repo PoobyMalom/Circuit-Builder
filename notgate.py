@@ -60,7 +60,7 @@ class NotGate:
 
     def drag(self, event):
         self.input.x, self.input.y = event.x - self.width/2, event.y
-        self.output.x, self.output.x = event.x + self.width/2, event.y
+        self.output.x, self.output.y = event.x + self.width/2, event.y
 
         if self.dragging:
             dx = event.x - self.start_x
