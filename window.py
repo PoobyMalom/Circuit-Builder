@@ -187,4 +187,12 @@ class Window:
         NotGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)
 
     def print_hovered(self, event):
-        print(self.hovered_component)
+        for _, value in self.circuit.components.items():
+            print(value.connected_wires)
+
+    def remove_gui_wire(self, src_id, dst_id):
+        key = (src_id, dst_id)
+        if key in self.wire_lookup:
+            wire = self.wire_lookup.pop(key)
+            for seg in wire.line_segs:
+                self.canvas.delete(seg)

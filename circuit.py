@@ -25,6 +25,7 @@ class Component:
         self.inputs = {name: False for name in inputs}
         self.outputs = {name: False for name in outputs}
         self.connections = {name: [] for name in outputs}
+        self.connected_wires = []
 
     def compute(self):
         """
@@ -119,7 +120,28 @@ class Circuit:
         self.components[component.id] = component
 
     def delete_component(self, component):
+        for src_pin, targets in component.connections.items():
+            for (dst_id, dst_pin) in targets:
+                if dst_id in self.components:
+                    self.components[dst_id].inputs[dst_pin] = False
+
+                self.window.remove_gui_wire(component.id, dst_id)
+
+        for other_id, other_comp in self.components.items():
+            for out_pin, connections in other_comp.connections.items():
+                other_comp.connections[out_pin] = [
+                    (dst_id, dst_pin) for (dst_id, dst_pin) in connections
+                    if dst_id != component.id
+                ]
+                
+                self.window.remove_gui_wire(other_id, component.id)
+
         del self.components[component.id]
+
+        self.wires = [
+            wire for wire in self.wires
+            if wire.src_comp_id != component.id and wire.dst_comp_id != component.id
+        ]
     
     def connect(self, wire):
         """
@@ -156,10 +178,14 @@ class Circuit:
         for comp_id in self.components:
             in_degree[comp_id] = 0
 
+        print(in_degree)
+
         # Populate graph and in-degree based on wires
         for wire in self.wires:
             graph[wire.src_comp_id].append(wire.dst_comp_id)
             in_degree[wire.dst_comp_id] += 1
+
+        print(graph)
 
         # Kahn's algorithm: start with nodes with in-degree 0
         queue = deque([cid for cid, deg in in_degree.items() if deg == 0])
@@ -179,6 +205,7 @@ class Circuit:
             return
 
         print("Circuit Topological Order:")
+        print(sorted_order)
         for cid in sorted_order:
             comp = self.components[cid]
             print(f"  • {comp.id} [{comp.type}] inputs: [{comp.inputs}], outputs: [{comp.outputs}], connections: [{comp.connections}]")

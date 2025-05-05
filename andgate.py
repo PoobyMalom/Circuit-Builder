@@ -137,7 +137,7 @@ class AndGate:
         self.drag_started = False
         
     def handle_hover_enter(self, event):
-        self.window.hovered_component = self.andgate
+        self.window.hovered_component = self
 
     def handle_hover_leave(self, event):
         self.window.hovered_component = None
