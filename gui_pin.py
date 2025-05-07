@@ -41,7 +41,7 @@ class GUIPin:
         canvas.tag_bind(self.id, "<Button-2>", self.place_wire)
 
     def create_pin(self, x, y):
-        color = "black" if self.is_input else "blue"
+        color = "black"
         return wh.draw_circle(self.canvas, x, y, self.radius, fill=color, outline='white')
 
     def start_drag(self, event):

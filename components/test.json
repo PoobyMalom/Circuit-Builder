@@ -1,0 +1,142 @@
+{
+   "name": "NAND",
+   "components": [
+      {
+         "id": "comp_0",
+         "pos": [
+            383,
+            277
+         ],
+         "type": "AND",
+         "inputs": [
+            "A",
+            "B"
+         ],
+         "outputs": [
+            "OUT"
+         ],
+         "connections": [
+            "OUT"
+         ],
+         "connected_wires": [
+            [
+               30.0,
+               163.0
+            ],
+            [
+               144.0,
+               163.0
+            ],
+            [
+               144.0,
+               266.0
+            ],
+            [
+               358.0,
+               266.0
+            ],
+            [
+               30.0,
+               420.0
+            ],
+            [
+               141.0,
+               420.0
+            ],
+            [
+               141.0,
+               286.0
+            ],
+            [
+               370.0,
+               286.0
+            ]
+         ]
+      },
+      {
+         "id": "comp_1",
+         "pos": [
+            30,
+            163
+         ],
+         "type": "INPUT",
+         "inputs": [],
+         "outputs": [
+            "OUT"
+         ],
+         "connections": [
+            "OUT"
+         ],
+         "connected_wires": []
+      },
+      {
+         "id": "comp_2",
+         "pos": [
+            30,
+            420
+         ],
+         "type": "INPUT",
+         "inputs": [],
+         "outputs": [
+            "OUT"
+         ],
+         "connections": [
+            "OUT"
+         ],
+         "connected_wires": []
+      },
+      {
+         "id": "comp_3",
+         "pos": [
+            770,
+            228
+         ],
+         "type": "INPUT",
+         "inputs": [],
+         "outputs": [
+            "IN"
+         ],
+         "connections": [
+            "IN"
+         ],
+         "connected_wires": [
+            [
+               420.0,
+               276.0
+            ],
+            [
+               553.0,
+               276.0
+            ],
+            [
+               553.0,
+               222.0
+            ],
+            [
+               770.0,
+               222.0
+            ]
+         ]
+      }
+   ],
+   "wires": [
+      {
+         "src_id": "comp_1",
+         "src_pin": "OUT",
+         "dst_id": "comp_0",
+         "dst_pin": "B"
+      },
+      {
+         "src_id": "comp_2",
+         "src_pin": "OUT",
+         "dst_id": "comp_0",
+         "dst_pin": "A"
+      },
+      {
+         "src_id": "comp_0",
+         "src_pin": "OUT",
+         "dst_id": "comp_3",
+         "dst_pin": "IN"
+      }
+   ]
+}

@@ -3,12 +3,12 @@ from circuit import Component, Wire
 from gui_pin import GUIPin
 
 class AndGate:
-    def __init__(self, canvas, window, circuit, id_generator, x, y):
+    def __init__(self, canvas, window, circuit, id_generator=None, x=100, y=100, id=None):
         self.canvas = canvas
         self.window = window
         self.circuit= circuit
         self.id_generator = id_generator
-        self.id = id_generator.gen_id()
+        self.id = id_generator.gen_id() if id is None else id
         self.x = x
         self.y = y
         self.component_shapes = [] # List to keep track of all tkinter objects that make up the and gate
@@ -25,7 +25,7 @@ class AndGate:
         self.component_shapes.append(self.base)
         self.components.append("")
 
-        self.andgate = Component(self.id, "AND", {"A": False, "B": False}, {"OUT": False})
+        self.andgate = Component(self.id, "AND", {"A": False, "B": False}, {"OUT": False}, (self.x, self.y))
         self.circuit.add_component(self.andgate)
 
         self.input1 = GUIPin(canvas, window, circuit, x - self.width/2, y + self.height/4, self.pin_radius, self.andgate.id, "A", is_input=True, draggable=False)
@@ -40,13 +40,6 @@ class AndGate:
         self.text = wh.draw_text(self.canvas, x, y, "AND", fill="#ffffff")
         self.component_shapes.append(self.text)
         self.components.append("")
-
-
-        
-        # print(self.input1.output_pin.id)
-        # print(self.input2.output_pin.id)
-        # print(self.andgate.id)
-        # self.circuit.connect(Wire(self.input1.output_pin.id, "OUT", self.andgate.id, "A"))
 
         self.dragging = False
         self.drag_started = False

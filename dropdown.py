@@ -73,7 +73,7 @@ class Dropdown():
         """
         if self.last_event:
             comp_id = self.id_generator.gen_id()
-            logic_input = InputPin(comp_id, ["OUT"])
+            logic_input = InputPin(comp_id, ["OUT"], pos=(30, self.last_event.y))
             self.circuit.add_component(logic_input)
             GUIPin(self.canvas, 
                    self.window, 
@@ -99,7 +99,7 @@ class Dropdown():
         """
         if self.last_event:
             comp_id = self.id_generator.gen_id()
-            logic_output = InputPin(comp_id, ["IN"])
+            logic_output = InputPin(comp_id, ["IN"], pos=(self.frame.winfo_width() - 30, self.last_event.y))
             self.circuit.add_component(logic_output)
             GUIPin(self.canvas, 
                    self.window, 

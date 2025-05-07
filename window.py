@@ -14,6 +14,7 @@ from circuit import Circuit, ComponentIDGenerator, Wire
 from wire import GUICanvasWire
 from andgate import AndGate 
 from notgate import NotGate
+from toolbar import Toolbar
 
 class Window:
     """
@@ -63,8 +64,9 @@ class Window:
         self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
 
         # Bottom toolbar (overlaps input/output bars)
-        self.toolbar = tk.Frame(root, height=30, bg="darkgray")
-        self.toolbar.place(x=0, rely=1.0, anchor='sw', relwidth=1.0)
+        self.toolbar = Toolbar(self.frame, self)
+       
+        
 
         self.root.bind("<Configure>", self.resize_window)
         #self.root.lift()
@@ -72,6 +74,7 @@ class Window:
         self.rect_id = wh.draw_rect(self.canvas, 30, 10, self.width - 60, self.height - 50, outline="#444444", width=2)
 
         self.wire_lookup = {}
+        self.gui_lookup = {}
 
         self.wire_start = None
         self.drawing_wire = False
@@ -129,6 +132,7 @@ class Window:
             if not comp.is_input:
                 self.wire_start = (comp_id, pin, x, y)
                 self.curr_wire = GUICanvasWire(self.canvas, comp_id, pin, None, None)
+                
                 comp.wire = self.curr_wire
                 self.curr_wire.create_wire(x, y)
                 self.drawing_wire = True
@@ -145,6 +149,7 @@ class Window:
                 self.curr_wire.dst_pin = dst_pin
                 self.curr_wire.end_wire(x, y)
                 comp.wire = self.curr_wire
+                self.circuit.components[comp.component_id].connected_wires += self.curr_wire.to_dict()
 
                 wire = Wire(src_id, src_pin, dst_id, dst_pin)
                 self.circuit.connect(wire)

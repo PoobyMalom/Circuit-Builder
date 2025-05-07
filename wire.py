@@ -32,6 +32,17 @@ class GUICanvasWire:
         self.curr_wire = None
         self.wire_pos = (None, None)
 
+    def to_dict(self):
+        line_points = []
+        for line in self.line_segs:
+            x1, y1, x2, y2 = self.canvas.coords(line)
+            if (x1, y1) not in line_points:
+                line_points.append((x1, y1))
+            if (x2, y2) not in line_points:
+                line_points.append((x2, y2))
+        return line_points
+
+
     def create_wire(self, x, y):
         """
         Initialize wire line and starting position

@@ -19,13 +19,27 @@ class Component:
         outputs (str[]): logic outputs into the component
         connections (str[]): list of connections to other components
     """
-    def __init__(self, id, type, inputs, outputs):
+    def __init__(self, id, type, inputs, outputs, pos):
         self.id = id
+        self.pos = pos
         self.type = type # AND, OR, NOT
         self.inputs = {name: False for name in inputs}
         self.outputs = {name: False for name in outputs}
         self.connections = {name: [] for name in outputs}
         self.connected_wires = []
+
+    def to_dict(self):
+        print(self.connected_wires)
+        return {
+            "id": self.id,
+            "pos": self.pos,
+            "type": self.type,
+            "inputs": list(self.inputs.keys()),
+            "outputs": list(self.outputs.keys()),
+            "connections": list(self.connections.keys()),
+            "connected_wires": self.connected_wires
+        }
+        
 
     def compute(self):
         """
@@ -58,8 +72,8 @@ class InputPin(Component):
 
     Adds ability to change input pin output values
     """
-    def __init__(self, id, output_pin):
-        super().__init__(id, "INPUT", [], output_pin)
+    def __init__(self, id, output_pin, pos):
+        super().__init__(id, "INPUT", [], output_pin, pos)
 
     def set_output(self, pin, value):
         self.outputs[pin] = value
@@ -93,6 +107,14 @@ class Wire:
         self.dst_comp_id = dst_comp_id
         self.dst_pin = dst_pin
 
+    def to_dict(self):
+        return {
+            "src_id": self.src_comp_id,
+            "src_pin": self.src_pin,
+            "dst_id": self.dst_comp_id,
+            "dst_pin": self.dst_pin
+        }
+
 
 class Circuit:
     """
@@ -106,6 +128,12 @@ class Circuit:
         self.window = window
         self.components = {}
         self.wires = []
+
+    def to_dict(self):
+        return {
+            "components": [comp.to_dict() for comp in self.components.values()],
+            "wires": [wire.to_dict() for wire in self.wires]
+        }
 
     def add_component(self, component):
         """
