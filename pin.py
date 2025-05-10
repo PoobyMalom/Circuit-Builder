@@ -1,46 +1,39 @@
-import tkinter as tk
+from component import GUIComponent
+from circuit import Pin
 import window_helpers as wh
 
-class GUIPin:
-    """
-    Represents a GUI pin that can act as either a logic source or sink.
-
-    Attributes:
-        canvas (tk.Canvas): Canvas to draw the pin on
-        window (Window): Window reference to call wire logic
-        circuit (Circuit): The logical circuit object
-        x, y (int): Pin coordinates
-        radius (int): Radius of the pin circle
-        is_input (bool): True if sink (e.g., connects to gate input), False if source (e.g., toggleable input)
-        component_id (str): ID of the logical component this pin connects to
-        pin_name (str): Name of the logic pin ("A", "OUT", etc.)
-        wire (GUICanvasWire): Currently attached GUI wire, if any
-    """
-    def __init__(self, canvas, window, x, y, radius, component_id, pin_name, is_input, draggable=False):
-        self.canvas = canvas
-        self.window = window
-        self.x = x
-        self.y = y
+class GUIPin(GUIComponent):
+    def __init__(self, window, canvas, component_id, x, y, radius, pin_name, is_input, draggable=False):
+        super().__init__(window, canvas, component_id, x, y)
         self.radius = radius
-        self.is_input = is_input
-        self.component_id = component_id
         self.pin_name = pin_name
-        self.dragging = False
-        self.drag_started = False
-        self.wire = None
+        self.is_input = is_input
         self.draggable = draggable
         self.state = 0
+        self.wire = None
 
-        self.id = self.create_pin(x, y)
+        self.draw()
+        self.add_component(window, component_id, x, y)
 
-        canvas.tag_bind(self.id, "<ButtonPress-1>", self.start_drag)
-        canvas.tag_bind(self.id, "<B1-Motion>", self.drag)
-        canvas.tag_bind(self.id, "<ButtonRelease-1>", self.stop_drag)
-        canvas.tag_bind(self.id, "<Button-2>", self.place_wire)
+        canvas.tag_bind(self.component_shapes[0], "<ButtonPress-1>", self.start_drag)
+        canvas.tag_bind(self.component_shapes[0], "<B1-Motion>", self.drag)
+        canvas.tag_bind(self.component_shapes[0], "<ButtonRelease-1>", self.stop_drag)
+        canvas.tag_bind(self.component_shapes[0], "<Button-2>", self.place_wire)
 
-    def create_pin(self, x, y):
-        color = "black"
-        return wh.draw_circle(self.canvas, x, y, self.radius, fill=color, outline='white')
+    def draw(self):
+        body = wh.draw_circle(self.canvas, self.x, self.y, self.radius, fill="black", outline="white")
+
+        if self.is_input:
+            self.outputs["OUT"] = self
+        else:
+            self.inputs["IN"] = self
+
+        self.component_shapes.append(body)
+
+
+    def add_component(self, window, id, x, y):
+        comp = Pin(id, "INPUT" if self.is_input else "OUTPUT", [self.pin_name], (x, y))
+        window.circuit.add_component(comp)
 
     def start_drag(self, event):
         if self.draggable:
@@ -60,7 +53,7 @@ class GUIPin:
             self.drag_started = True
             self.y = event.y
             self.canvas.coords(
-                self.id,
+                self.component_shapes[0],
                 self.x - self.radius, self.y - self.radius,
                 self.x + self.radius, self.y + self.radius
             )
@@ -93,11 +86,11 @@ class GUIPin:
         logic_pin = self.window.circuit.components[self.component_id]
 
         if self.state == 0:
-            self.canvas.itemconfig(self.id, fill="green")
+            self.canvas.itemconfig(self.component_shapes[0], fill="green")
             logic_pin.outputs[self.pin_name] = True
             self.state = 1
         else:
-            self.canvas.itemconfig(self.id, fill="black")
+            self.canvas.itemconfig(self.component_shapes[0], fill="black")
             logic_pin.outputs[self.pin_name] = False
             self.state = 0
 
@@ -109,18 +102,3 @@ class GUIPin:
         """
         direction = "IN" if self.is_input else "OUT"
         self.window.handle_wire_click(self, self.component_id, self.pin_name, self.x, self.y)
-
-    def update_wires(self, event):
-        if self.wire:
-            if self.is_input:
-                x1, y1, _, _ = self.canvas.coords(self.wire.line_segs[-1])
-                self.canvas.coords(self.wire.line_segs[-1], x1, self.y, self.x, self.y)
-                if len(self.wire.line_segs) > 2:
-                    x1_1, y1_1, _, _ = self.canvas.coords(self.wire.line_segs[-2])
-                    self.canvas.coords(self.wire.line_segs[-2], x1_1, y1_1, x1, y1)
-            else:
-                _, _, x2, y2 = self.canvas.coords(self.wire.line_segs[0])
-                self.canvas.coords(self.wire.line_segs[0], self.x, self.y, x2, self.y)
-                if len(self.wire.line_segs) > 2:
-                    _, _, x2_1, y2_1 = self.canvas.coords(self.wire.line_segs[1])
-                    self.canvas.coords(self.wire.line_segs[1], x2, y2, x2_1, y2_1)

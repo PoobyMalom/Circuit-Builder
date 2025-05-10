@@ -63,7 +63,7 @@ class Component:
     def __str__(self):
         return f"  • {self.id} [{self.type}] inputs: [{self.inputs}], outputs: [{self.outputs}], connections: [{self.connections}]"
 
-class InputPin(Component):
+class Pin(Component):
     """
     Represents an input pin in the circuit
 
@@ -72,8 +72,8 @@ class InputPin(Component):
 
     Adds ability to change input pin output values
     """
-    def __init__(self, id, output_pin, pos):
-        super().__init__(id, "INPUT", [], output_pin, pos)
+    def __init__(self, id, pin_name, output_pin, pos):
+        super().__init__(id, pin_name, [], output_pin, pos)
 
     def set_output(self, pin, value):
         self.outputs[pin] = value

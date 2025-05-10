@@ -171,5 +171,6 @@ class AndGate(GUIComponent):
         self.component_shapes += [body, a.id, b.id, out.id, text]
 
     def add_component(self, window, id, x, y):
+        print(id)
         comp = Component(id, "AND", self.inputs, self.outputs, (x, y))
         window.circuit.add_component(comp)

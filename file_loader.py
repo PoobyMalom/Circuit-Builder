@@ -1,8 +1,8 @@
 import json
 import tkinter as tk
-from circuit import Component, Wire, InputPin, Circuit
+from circuit import Wire
 from andgate import AndGate    
-from gui_pin import GUIPin
+from pin import GUIPin
 from wire import GUICanvasWire
 import window_helpers as wh
 
@@ -45,33 +45,17 @@ class FileLoader:
         x, y = comp_data["pos"]
 
         if type == "INPUT":
-            logic = InputPin(id, ["OUT"], (x, y))
+            print("input")
+            GUIPin(window, canvas, id, x, y, 15, "OUT", False, True)
         elif type == "OUTPUT":
-            logic = InputPin(id, ["IN"], (x, y))
+            print("output")
+            GUIPin(window, canvas, id, x, y, 15, "IN", True, True)
         elif type == "AND":
-            logic = Component(id, type, {"A": False, "B": False}, {"OUT": False}, (x, y))
+            print("and")
+            AndGate(window, canvas, id, x, y)
         elif type == "NOT":
             pass
         elif type == "SUBCIRCUIT":
             pass
         else:
             raise LookupError(type)
-        
-        circuit.add_component(logic)
-
-        if type == "INPUT" or type == "OUTPUT":
-            is_input = (type == "INPUT")
-            gui = GUIPin(canvas, 
-                    window, 
-                    circuit, 
-                    x, y, 15, 
-                    id, 
-                    pin_name="OUT" if is_input else "IN", 
-                    is_input= not is_input, 
-                    draggable=True)
-        elif type in ["AND", "NOT"]:
-            gui = AndGate(canvas, window, circuit, None, x, y, id)
-
-        window.gui_lookup[id] = gui
-
-        
