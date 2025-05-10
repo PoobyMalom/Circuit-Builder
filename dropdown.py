@@ -76,8 +76,7 @@ class Dropdown():
             logic_input = InputPin(comp_id, ["OUT"], pos=(30, self.last_event.y))
             self.circuit.add_component(logic_input)
             GUIPin(self.canvas, 
-                   self.window, 
-                   self.circuit, 
+                   self.window,  
                    x=30, 
                    y=self.last_event.y, 
                    radius=15, 
@@ -103,7 +102,6 @@ class Dropdown():
             self.circuit.add_component(logic_output)
             GUIPin(self.canvas, 
                    self.window, 
-                   self.circuit, 
                    x=self.frame.winfo_width() - 30, 
                    y=self.last_event.y, 
                    radius=15, 

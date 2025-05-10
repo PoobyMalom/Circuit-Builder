@@ -17,10 +17,9 @@ class GUIPin:
         pin_name (str): Name of the logic pin ("A", "OUT", etc.)
         wire (GUICanvasWire): Currently attached GUI wire, if any
     """
-    def __init__(self, canvas, window, circuit, x, y, radius, component_id, pin_name, is_input, draggable=False):
+    def __init__(self, canvas, window, x, y, radius, component_id, pin_name, is_input, draggable=False):
         self.canvas = canvas
         self.window = window
-        self.circuit = circuit
         self.x = x
         self.y = y
         self.radius = radius
@@ -92,7 +91,7 @@ class GUIPin:
         """
         Flip the logic value of the pin and trigger evaluation if source.
         """
-        logic_pin = self.circuit.components[self.component_id]
+        logic_pin = self.window.circuit.components[self.component_id]
 
         if self.state == 0:
             self.canvas.itemconfig(self.id, fill="green")
@@ -103,7 +102,7 @@ class GUIPin:
             logic_pin.outputs[self.pin_name] = False
             self.state = 0
 
-        self.circuit.evaluate()
+        self.window.circuit.evaluate()
 
     def place_wire(self, event):
         """

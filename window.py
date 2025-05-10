@@ -183,13 +183,13 @@ class Window:
             self.curr_wire.curve_wire(event.x, event.y)
 
     def test_and(self, event):
-        AndGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)
+        AndGate(self, self.canvas, self.id_generator.gen_id(), event.x, event.y)
 
     def test_eval(self, event):
         self.circuit.evaluate()
 
     def test_not(self, event):
-        NotGate(self.canvas, self, self.circuit, self.id_generator, event.x, event.y)
+        NotGate(self.canvas, self, self.circuit, self.id_generator.gen_id(), event.x, event.y)
 
     def print_hovered(self, event):
         for _, value in self.circuit.components.items():
