@@ -189,7 +189,7 @@ class Window:
         self.circuit.evaluate()
 
     def test_not(self, event):
-        NotGate(self.canvas, self, self.circuit, self.id_generator.gen_id(), event.x, event.y)
+        NotGate(self, self.canvas, self.id_generator.gen_id(), event.x, event.y)
 
     def print_hovered(self, event):
         for _, value in self.circuit.components.items():

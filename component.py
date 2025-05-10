@@ -60,6 +60,14 @@ class GUIComponent:
                 for i in range(len(self.component_shapes)):
                     self.canvas.move(self.component_shapes[i], -dx, -dy)
 
+                for _, input in self.inputs.items():
+                    input.update_wires(event)
+
+                for _, output in self.outputs.items():
+                    output.update_wires(event)
+
+
+
     def stop_drag(self, _):
         """
         Function to stop dragging
