@@ -4,40 +4,8 @@
     {
       "id": "comp_0",
       "pos": [
-        30,
-        177
-      ],
-      "type": "INPUT",
-      "inputs": [],
-      "outputs": [
-        "OUT"
-      ],
-      "connections": [
-        "OUT"
-      ],
-      "connected_wires": []
-    },
-    {
-      "id": "comp_1",
-      "pos": [
-        30,
-        365
-      ],
-      "type": "INPUT",
-      "inputs": [],
-      "outputs": [
-        "OUT"
-      ],
-      "connections": [
-        "OUT"
-      ],
-      "connected_wires": []
-    },
-    {
-      "id": "comp_2",
-      "pos": [
-        395,
-        270
+        387,
+        289
       ],
       "type": "AND",
       "inputs": [
@@ -50,93 +18,131 @@
       "connections": [
         "OUT"
       ],
-      "connected_wires": [
-        [
-          30.0,
-          177.0
-        ],
-        [
-          214.0,
-          177.0
-        ],
-        [
-          214.0,
-          260.0
-        ],
-        [
-          370.0,
-          260.0
-        ],
-        [
-          30.0,
-          365.0
-        ],
-        [
-          209.0,
-          365.0
-        ],
-        [
-          209.0,
-          279.0
-        ],
-        [
-          370.0,
-          279.0
-        ]
-      ]
+      "connected_wires": []
+    },
+    {
+      "id": "comp_1",
+      "pos": [
+        30,
+        202
+      ],
+      "type": "OUTPUT",
+      "inputs": [],
+      "outputs": [
+        "OUT"
+      ],
+      "connections": [
+        "OUT"
+      ],
+      "connected_wires": []
+    },
+    {
+      "id": "comp_2",
+      "pos": [
+        30,
+        402
+      ],
+      "type": "OUTPUT",
+      "inputs": [],
+      "outputs": [
+        "OUT"
+      ],
+      "connections": [
+        "OUT"
+      ],
+      "connected_wires": []
     },
     {
       "id": "comp_3",
       "pos": [
         770,
-        224
+        217
       ],
       "type": "INPUT",
-      "inputs": [],
+      "inputs": [
+        "IN"
+      ],
       "outputs": [
         "IN"
       ],
       "connections": [
         "IN"
       ],
-      "connected_wires": [
-        [
-          420.0,
-          270.0
-        ],
-        [
-          661.0,
-          270.0
-        ],
-        [
-          661.0,
-          225.0
-        ],
-        [
-          770.0,
-          225.0
-        ]
-      ]
+      "connected_wires": []
     }
   ],
   "wires": [
     {
-      "src_id": "comp_0",
-      "src_pin": "OUT",
-      "dst_id": "comp_2",
-      "dst_pin": "B"
-    },
-    {
       "src_id": "comp_1",
       "src_pin": "OUT",
-      "dst_id": "comp_2",
-      "dst_pin": "A"
+      "dst_id": "comp_0",
+      "dst_pin": "B",
+      "path": [
+        [
+          30,
+          202
+        ],
+        [
+          195,
+          202
+        ],
+        [
+          195,
+          285
+        ],
+        [
+          362.0,
+          281.5
+        ]
+      ]
     },
     {
       "src_id": "comp_2",
       "src_pin": "OUT",
+      "dst_id": "comp_0",
+      "dst_pin": "A",
+      "path": [
+        [
+          30,
+          402
+        ],
+        [
+          199,
+          402
+        ],
+        [
+          199,
+          300
+        ],
+        [
+          362.0,
+          296.5
+        ]
+      ]
+    },
+    {
+      "src_id": "comp_0",
+      "src_pin": "OUT",
       "dst_id": "comp_3",
-      "dst_pin": "IN"
+      "dst_pin": "IN",
+      "path": [
+        [
+          412.0,
+          289
+        ],
+        [
+          613,
+          289
+        ],
+        [
+          613,
+          219
+        ],
+        [
+          770,
+          217
+        ]
+      ]
     }
   ]
 }

@@ -59,6 +59,7 @@ class Window:
         self.canvas.bind("e", self.test_eval)
         self.canvas.bind("n", self.test_not)
         self.canvas.bind("t", self.print_hovered)
+        self.canvas.bind("d", self.test_wire_bullshit)
         
 
         self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
@@ -149,9 +150,9 @@ class Window:
                 self.curr_wire.dst_pin = dst_pin
                 self.curr_wire.end_wire(x, y)
                 comp.wire = self.curr_wire
-                self.circuit.components[comp.component_id].connected_wires += self.curr_wire.to_dict()
+                #self.circuit.components[comp.component_id].connected_wires += self.curr_wire.to_dict()
 
-                wire = Wire(src_id, src_pin, dst_id, dst_pin)
+                wire = Wire(src_id, src_pin, dst_id, dst_pin, comp.wire.path)
                 self.circuit.connect(wire)
                 self.wire_lookup[(src_id, dst_id)] = self.curr_wire
 
@@ -201,3 +202,8 @@ class Window:
             wire = self.wire_lookup.pop(key)
             for seg in wire.line_segs:
                 self.canvas.delete(seg)
+
+    def test_wire_bullshit(self, event):
+        print(self.gui_lookup)
+        for component in self.gui_lookup.values():
+            print(component.wire)

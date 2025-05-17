@@ -61,13 +61,9 @@ class GUIComponent:
                     self.canvas.move(self.component_shapes[i], -dx, -dy)
 
                 for pin in self.inputs.values():
-                    pin.x -= dx
-                    pin.y -= dy
                     pin.update_wires(event)
 
                 for pin in self.outputs.values():
-                    pin.x -= dx
-                    pin.y -= dy
                     pin.update_wires(event)
 
 

@@ -29,7 +29,6 @@ class Component:
         self.connected_wires = []
 
     def to_dict(self):
-        print(self.connected_wires)
         return {
             "id": self.id,
             "pos": self.pos,
@@ -73,7 +72,10 @@ class Pin(Component):
     Adds ability to change input pin output values
     """
     def __init__(self, id, pin_name, output_pin, pos):
-        super().__init__(id, pin_name, [], output_pin, pos)
+        if pin_name == "OUTPUT":
+            super().__init__(id, pin_name, [], output_pin, pos)
+        elif pin_name == "INPUT":
+            super().__init__(id, pin_name, output_pin, [], pos)
 
     def set_output(self, pin, value):
         self.outputs[pin] = value
@@ -101,18 +103,20 @@ class Wire:
         dst_comp_id (str): ID of the destination component.
         dst_pin (str): Name of the destination pin.
     """
-    def __init__(self, src_comp_id, src_pin, dst_comp_id, dst_pin):
+    def __init__(self, src_comp_id, src_pin, dst_comp_id, dst_pin, path):
         self.src_comp_id = src_comp_id
         self.src_pin = src_pin
         self.dst_comp_id = dst_comp_id
         self.dst_pin = dst_pin
+        self.path = path
 
     def to_dict(self):
         return {
             "src_id": self.src_comp_id,
             "src_pin": self.src_pin,
             "dst_id": self.dst_comp_id,
-            "dst_pin": self.dst_pin
+            "dst_pin": self.dst_pin,
+            "path": self.path
         }
 
 
@@ -206,14 +210,10 @@ class Circuit:
         for comp_id in self.components:
             in_degree[comp_id] = 0
 
-        print(in_degree)
-
         # Populate graph and in-degree based on wires
         for wire in self.wires:
             graph[wire.src_comp_id].append(wire.dst_comp_id)
             in_degree[wire.dst_comp_id] += 1
-
-        print(graph)
 
         # Kahn's algorithm: start with nodes with in-degree 0
         queue = deque([cid for cid, deg in in_degree.items() if deg == 0])
@@ -233,7 +233,6 @@ class Circuit:
             return
 
         print("Circuit Topological Order:")
-        print(sorted_order)
         for cid in sorted_order:
             comp = self.components[cid]
             print(f"  • {comp.id} [{comp.type}] inputs: [{comp.inputs}], outputs: [{comp.outputs}], connections: [{comp.connections}]")
