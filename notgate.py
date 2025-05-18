@@ -1,6 +1,6 @@
 import window_helpers as wh
 from circuit import Component, Wire
-from gui_pin import GUIPin
+from pin import GUIPin
 from component import GUIComponent
 
 class NotGate(GUIComponent):
