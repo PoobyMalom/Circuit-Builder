@@ -65,7 +65,8 @@ class GUIComponent:
                     pin.x -= dx
                     pin.y -= dy
                     if pin.wire:
-                        pin.wire.update_wire()
+                        for wire in pin.wire:
+                            wire.update_wire()
 
 
 

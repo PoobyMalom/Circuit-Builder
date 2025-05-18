@@ -4,8 +4,8 @@
     {
       "id": "comp_0",
       "pos": [
-        387,
-        289
+        374,
+        318
       ],
       "type": "AND",
       "inputs": [
@@ -23,11 +23,14 @@
     {
       "id": "comp_1",
       "pos": [
-        30,
-        202
+        571,
+        206
       ],
-      "type": "OUTPUT",
-      "inputs": [],
+      "type": "AND",
+      "inputs": [
+        "A",
+        "B"
+      ],
       "outputs": [
         "OUT"
       ],
@@ -39,8 +42,22 @@
     {
       "id": "comp_2",
       "pos": [
+        770,
+        210
+      ],
+      "type": "INPUT",
+      "inputs": [
+        "IN"
+      ],
+      "outputs": [],
+      "connections": [],
+      "connected_wires": []
+    },
+    {
+      "id": "comp_3",
+      "pos": [
         30,
-        402
+        261
       ],
       "type": "OUTPUT",
       "inputs": [],
@@ -53,94 +70,162 @@
       "connected_wires": []
     },
     {
-      "id": "comp_3",
+      "id": "comp_4",
+      "pos": [
+        30,
+        370
+      ],
+      "type": "OUTPUT",
+      "inputs": [],
+      "outputs": [
+        "OUT"
+      ],
+      "connections": [
+        "OUT"
+      ],
+      "connected_wires": []
+    },
+    {
+      "id": "comp_5",
       "pos": [
         770,
-        217
+        307
       ],
       "type": "INPUT",
       "inputs": [
         "IN"
       ],
-      "outputs": [
-        "IN"
-      ],
-      "connections": [
-        "IN"
-      ],
+      "outputs": [],
+      "connections": [],
       "connected_wires": []
     }
   ],
   "wires": [
     {
-      "src_id": "comp_1",
+      "src_id": "comp_0",
       "src_pin": "OUT",
-      "dst_id": "comp_0",
+      "dst_id": "comp_1",
       "dst_pin": "B",
       "path": [
         [
-          30,
+          399.0,
+          318
+        ],
+        [
+          459,
+          318
+        ],
+        [
+          459,
           202
         ],
         [
-          195,
-          202
-        ],
-        [
-          195,
-          285
-        ],
-        [
-          362.0,
-          281.5
-        ]
-      ]
-    },
-    {
-      "src_id": "comp_2",
-      "src_pin": "OUT",
-      "dst_id": "comp_0",
-      "dst_pin": "A",
-      "path": [
-        [
-          30,
-          402
-        ],
-        [
-          199,
-          402
-        ],
-        [
-          199,
-          300
-        ],
-        [
-          362.0,
-          296.5
+          546.0,
+          198.5
         ]
       ]
     },
     {
       "src_id": "comp_0",
       "src_pin": "OUT",
-      "dst_id": "comp_3",
+      "dst_id": "comp_1",
+      "dst_pin": "A",
+      "path": [
+        [
+          399.0,
+          318
+        ],
+        [
+          496,
+          318
+        ],
+        [
+          496,
+          217
+        ],
+        [
+          546.0,
+          213.5
+        ]
+      ]
+    },
+    {
+      "src_id": "comp_1",
+      "src_pin": "OUT",
+      "dst_id": "comp_2",
       "dst_pin": "IN",
       "path": [
         [
-          412.0,
-          289
-        ],
-        [
-          613,
-          289
-        ],
-        [
-          613,
-          219
+          596.0,
+          206
         ],
         [
           770,
-          217
+          210
+        ]
+      ]
+    },
+    {
+      "src_id": "comp_3",
+      "src_pin": "OUT",
+      "dst_id": "comp_0",
+      "dst_pin": "B",
+      "path": [
+        [
+          30,
+          261
+        ],
+        [
+          285,
+          261
+        ],
+        [
+          285,
+          311
+        ],
+        [
+          349.0,
+          310.5
+        ]
+      ]
+    },
+    {
+      "src_id": "comp_4",
+      "src_pin": "OUT",
+      "dst_id": "comp_0",
+      "dst_pin": "A",
+      "path": [
+        [
+          30,
+          370
+        ],
+        [
+          280,
+          370
+        ],
+        [
+          280,
+          325
+        ],
+        [
+          349.0,
+          325.5
+        ]
+      ]
+    },
+    {
+      "src_id": "comp_0",
+      "src_pin": "OUT",
+      "dst_id": "comp_5",
+      "dst_pin": "IN",
+      "path": [
+        [
+          399.0,
+          318
+        ],
+        [
+          770,
+          307
         ]
       ]
     }

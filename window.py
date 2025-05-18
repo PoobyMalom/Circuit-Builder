@@ -140,7 +140,7 @@ class Window:
 
                 self.curr_wire = GUICanvasWire(self.canvas, src_pin_obj, None)
                 
-                comp.wire = self.curr_wire
+                comp.wire.append(self.curr_wire)
                 self.curr_wire.create_wire(x, y)
                 self.drawing_wire = True
             else:
@@ -156,12 +156,12 @@ class Window:
                 self.curr_wire.dst_pin = self.pin_lookup[(comp_id, pin)]
                 
                 self.curr_wire.end_wire(x, y)
-                comp.wire = self.curr_wire
+                comp.wire.append(self.curr_wire)
                 #self.circuit.components[comp.component_id].connected_wires += self.curr_wire.to_dict()
 
-                wire = Wire(src_id, src_pin, dst_id, dst_pin, comp.wire.path)
+                wire = Wire(src_id, src_pin, dst_id, dst_pin, self.curr_wire.path)
                 self.circuit.connect(wire)
-                self.wire_lookup[(src_id, dst_id)] = self.curr_wire
+                self.wire_lookup.setdefault((src_id, dst_id), []).append(self.curr_wire)
 
                 self.drawing_wire = False
                 self.curr_wire = None
@@ -211,9 +211,8 @@ class Window:
                 self.canvas.delete(seg)
 
     def test_wire_bullshit(self, event):
-        print(self.gui_lookup)
-        for component in self.gui_lookup.values():
-            print(component.wire)
+        print(self.wire_lookup)
+        
 
     def refresh_gui_from_logic(self):
         for comp_id, comp in self.circuit.components.items():

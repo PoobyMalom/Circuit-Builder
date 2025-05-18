@@ -134,6 +134,7 @@ class Circuit:
         self.wires = []
 
     def to_dict(self):
+        print(self.wires)
         return {
             "components": [comp.to_dict() for comp in self.components.values()],
             "wires": [wire.to_dict() for wire in self.wires]
@@ -278,9 +279,10 @@ class Circuit:
 
                     if self.window.wire_lookup is not None:
                         key = (component.id, dst_id)
-                        gui_wire = self.window.wire_lookup.get(key)
-                        if gui_wire:
-                            gui_wire.update_color(output_value)
+                        gui_wires = self.window.wire_lookup.get(key)
+                        if gui_wires:
+                            for wire in gui_wires:
+                                wire.update_color(output_value)
         self.window.refresh_gui_from_logic()
         print("------------------------------------------------------------------- \n")
 

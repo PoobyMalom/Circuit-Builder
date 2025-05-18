@@ -10,7 +10,7 @@ class GUIPin(GUIComponent):
         self.is_input = is_input
         self.draggable = draggable
         self.state = 0
-        self.wire = None
+        self.wire = []
         self.body = None
 
         self.draw()

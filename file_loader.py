@@ -63,10 +63,10 @@ class FileLoader:
 
             gui_wire.path.append(path[-1])
 
-            src_id_obj.wire = gui_wire
-            dst_id_obj.wire = gui_wire
+            src_id_obj.wire.append(gui_wire)
+            dst_id_obj.wire.append(gui_wire)
 
-            window.wire_lookup[(src_id, dst_id)] = gui_wire
+            window.wire_lookup.setdefault((src_id, dst_id), []).append(gui_wire)
             window.gui_lookup[src_id].wire = gui_wire
 
         # Set focus back on canvas
