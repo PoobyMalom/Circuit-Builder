@@ -22,13 +22,19 @@ class AndGate(GUIComponent):
         canvas.tag_bind(self.component_shapes[-1], "<B1-Motion>", self.drag)
         canvas.tag_bind(self.component_shapes[-1], "<ButtonRelease-1>", self.stop_drag)
 
+        canvas.tag_bind(f"AND_{self.component_id}_CLICKABLE", "<Enter>", self.handle_hover_enter)
+        canvas.tag_bind(f"AND_{self.component_id}_CLICKABLE", "<Leave>", self.handle_hover_leave)
+
     def draw(self):
         body = wh.draw_rect(self.canvas, self.x - self.width/2, self.y - self.height/2, self.width, self.height, fill="#247ec4")
+        text = wh.draw_text(self.canvas, self.x, self.y, "AND", fill="#ffffff")
+
+        self.canvas.addtag_withtag(f"AND_{self.component_id}_CLICKABLE", body)
+        self.canvas.addtag_withtag(f"AND_{self.component_id}_CLICKABLE", text)
 
         a = GUIPin(self.window, self.canvas, self.component_id, self.x - self.width/2, self.y + self.height/4, self.pin_radius, "A", is_input=True, draggable=False)
         b = GUIPin(self.window, self.canvas, self.component_id, self.x - self.width/2, self.y - self.height/4, self.pin_radius, "B", is_input=True, draggable=False)
         out = GUIPin(self.window, self.canvas, self.component_id, self.x + self.width/2, self.y, self.pin_radius, "OUT", False)
-        text = wh.draw_text(self.canvas, self.x, self.y, "AND", fill="#ffffff")
 
         self.inputs["A"] = a
         self.window.pin_lookup[(self.component_id, "A")] = a
@@ -40,5 +46,7 @@ class AndGate(GUIComponent):
         self.component_shapes += [body, a.body, b.body, out.body, text]
 
     def add_component(self, window, id, x, y):
-        comp = Component(id, "AND", self.inputs, self.outputs, (x, y))
-        window.circuit.add_component(comp)
+        self.logic_component = Component(id, "AND", self.inputs, self.outputs, (x, y))
+        window.circuit.add_component(self.logic_component)
+
+    

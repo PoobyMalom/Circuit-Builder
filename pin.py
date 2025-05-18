@@ -23,6 +23,10 @@ class GUIPin(GUIComponent):
         canvas.tag_bind(self.component_shapes[0], "<ButtonRelease-1>", self.stop_drag)
         canvas.tag_bind(self.component_shapes[0], "<Button-2>", self.place_wire)
 
+        if self.draggable:
+            canvas.tag_bind(self.component_shapes[0], "<Enter>", self.handle_hover_enter)
+            canvas.tag_bind(self.component_shapes[0], "<Leave>", self.handle_hover_leave)
+
     def draw(self):
         self.body = wh.draw_circle(self.canvas, self.x, self.y, self.radius, fill="black", outline="white")
 
@@ -35,8 +39,8 @@ class GUIPin(GUIComponent):
 
 
     def add_component(self, window, id, x, y):
-        comp = Pin(id, "INPUT" if self.is_input else "OUTPUT", [self.pin_name], (x, y))
-        window.circuit.add_component(comp)
+        self.logic_component = Pin(id, "INPUT" if self.is_input else "OUTPUT", [self.pin_name], (x, y))
+        window.circuit.add_component(self.logic_component)
 
     def start_drag(self, event):
         if self.draggable:
@@ -96,7 +100,8 @@ class GUIPin(GUIComponent):
         Trigger wire placement logic from Window.
         """
         direction = "IN" if self.is_input else "OUT"
-        self.window.handle_wire_click(self, self.component_id, self.pin_name, self.x, self.y)
+        if (event.x > 30) and (event.x < self.window.width - 30):
+            self.window.handle_wire_click(self, self.component_id, self.pin_name, self.x, self.y)
 
     def get_pin_position(self):
         return self._get_center_of(self.body)

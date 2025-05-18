@@ -15,6 +15,7 @@ from wire import GUICanvasWire
 from andgate import AndGate 
 from notgate import NotGate
 from toolbar import Toolbar
+from ghost import Ghost
 
 class Window:
     """
@@ -83,6 +84,8 @@ class Window:
         self.curr_wire = None
 
         self.hovered_component = None
+        self.placing_type = None
+        self.ghost = None
 
     def resize_window(self, event):
         """
@@ -218,3 +221,58 @@ class Window:
                 logic_value = comp.inputs["IN"]
                 gui_pin = self.pin_lookup[(comp_id, "IN")]
                 gui_pin.set_state_color(logic_value)
+
+    def add_component(self, comp_type):
+        self.canvas.focus_set()
+        self.placing_type = comp_type
+        self.canvas.config(cursor="crosshair")
+
+        x, y = self.canvas.winfo_pointerxy()
+        self.ghost = self.draw_ghost_gate(comp_type, x, y)
+        print(self.ghost)
+
+        self._ghost_move_id = self.canvas.bind("<Motion>", self._ghost_move, add="+")
+        self._ghost_click_id = self.canvas.bind("<Button-1>", self._ghost_place, add="+")
+
+    def _ghost_move(self, event):
+        if not self.placing_type: 
+            return
+
+        print("moving")
+        new_x, new_y = event.x, event.y
+        self.ghost.move(new_x, new_y)
+
+
+    def _ghost_place(self, event):
+        if not self.placing_type: return
+
+        if self.placing_type == "AND":
+            gate = AndGate(
+                self,
+                self.canvas,
+                component_id=self.id_generator.gen_id(),
+                x=event.x,
+                y=event.y
+            )
+        elif self.placing_type == "NOT":
+            gate = NotGate(
+                self,
+                self.canvas,
+                component_id=self.id_generator.gen_id(),
+                x=event.x,
+                y=event.y
+            )
+
+        self.ghost.delete()
+
+        self.placing_type = None
+        self.ghost = None
+        self.canvas.config(cursor="")
+        self.canvas.unbind("<Motion>", self._ghost_move_id)
+        self.canvas.unbind("<Button-1>", self._ghost_click_id)
+
+    def draw_ghost_gate(self, comp_type, x, y):
+        if comp_type == "AND":
+            return Ghost(self, self.canvas, x, y, 50, 30, "#247ec4")
+        elif comp_type == "NOT":
+            return Ghost(self, self.canvas, x, y, 50, 30, "#a0241c")

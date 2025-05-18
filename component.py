@@ -4,6 +4,7 @@ class GUIComponent:
         self.window = window
         self.canvas = canvas
         self.component_id = component_id
+        self.logic_component = None
         self.x = x
         self.y = y
 
@@ -62,7 +63,7 @@ class GUIComponent:
 
                 for pin in {**self.inputs, **self.outputs}.values():
                     pin.x -= dx
-                    pin.    y -= dy
+                    pin.y -= dy
                     if pin.wire:
                         pin.wire.update_wire()
 

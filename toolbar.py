@@ -37,6 +37,22 @@ class Toolbar:
         )
         self.file_button.pack(side="left", padx=0)
 
+        self.and_button = ttk.Button(
+            self.frame,
+            text="AND",
+            style="Toolbar.TButton",
+            command=self.place_and
+        )
+        self.and_button.pack(side="left", padx=0)
+
+        self.not_button = ttk.Button(
+            self.frame,
+            text="NOT",
+            style="Toolbar.TButton",
+            command=self.place_not
+        )
+        self.not_button.pack(side="left", padx=0)
+
         self.file_menu = tk.Menu(self.frame, tearoff=0, relief='flat', background="#1897d6", foreground="#1897d6")
         self.file_menu.add_command(label='New File', command=self.new_file)
         self.file_menu.add_command(label='Open...', command=self.open_file)
@@ -57,3 +73,9 @@ class Toolbar:
 
     def save_file(self):
         FileSaver("test.json", self.window.circuit, 'NAND')
+
+    def place_and(self):
+        self.window.add_component("AND")
+
+    def place_not(self):
+        self.window.add_component("NOT")
