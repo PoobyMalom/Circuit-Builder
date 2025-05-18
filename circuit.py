@@ -281,7 +281,7 @@ class Circuit:
                         gui_wire = self.window.wire_lookup.get(key)
                         if gui_wire:
                             gui_wire.update_color(output_value)
-
+        self.window.refresh_gui_from_logic()
         print("------------------------------------------------------------------- \n")
 
 

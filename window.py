@@ -211,3 +211,10 @@ class Window:
         print(self.gui_lookup)
         for component in self.gui_lookup.values():
             print(component.wire)
+
+    def refresh_gui_from_logic(self):
+        for comp_id, comp in self.circuit.components.items():
+            if comp.type == "INPUT":
+                logic_value = comp.inputs["IN"]
+                gui_pin = self.pin_lookup[(comp_id, "IN")]
+                gui_pin.set_state_color(logic_value)

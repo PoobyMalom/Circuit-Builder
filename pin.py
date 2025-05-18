@@ -63,20 +63,7 @@ class GUIPin(GUIComponent):
 
             # If connected, update wire end
             if self.wire:
-                if self.is_input:
-                    print("input")
-                    x1, y1, _, _ = self.canvas.coords(self.wire.line_segs[-1])
-                    self.canvas.coords(self.wire.line_segs[-1], x1, self.y, self.x, self.y)
-                    if len(self.wire.line_segs) > 2:
-                        x1_1, y1_1, _, _ = self.canvas.coords(self.wire.line_segs[-2])
-                        self.canvas.coords(self.wire.line_segs[-2], x1_1, y1_1, x1, y1)
-                else:
-                    print("output")
-                    _, _, x2, y2 = self.canvas.coords(self.wire.line_segs[0])
-                    self.canvas.coords(self.wire.line_segs[0], self.x, self.y, x2, self.y)
-                    if len(self.wire.line_segs) > 2:
-                        _, _, x2_1, y2_1 = self.canvas.coords(self.wire.line_segs[1])
-                        self.canvas.coords(self.wire.line_segs[1], x2, y2, x2_1, y2_1)
+                self.wire.update_wire()
 
     def stop_drag(self, _):
         if not self.drag_started and not self.is_input:
@@ -100,6 +87,9 @@ class GUIPin(GUIComponent):
             self.state = 0
 
         self.window.circuit.evaluate()
+
+    def set_state_color(self, logic_value):
+        self.canvas.itemconfig(self.component_shapes[0], fill=("green" if logic_value else "black"))
 
     def place_wire(self, event):
         """

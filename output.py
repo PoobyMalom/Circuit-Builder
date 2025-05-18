@@ -116,19 +116,7 @@ class Output:
                 )
                 
                 if self.wire:
-                    x1, y1, _, _ = self.canvas.coords(self.wire.line_segs[-1])
-                    self.canvas.coords(
-                        self.wire.line_segs[-1],
-                        x1, self.y,
-                        self.x, self.y
-                    )
-                    if len(self.wire.line_segs) > 2:
-                        x1_1, y1_1, _, _ = self.canvas.coords(self.wire.line_segs[-2])
-                        self.canvas.coords(
-                            self.wire.line_segs[-2],
-                            x1_1, y1_1,
-                            x1, y1        
-                        )
+                    self.wire.update_wire()
 
     def stop_drag(self, _):
         """

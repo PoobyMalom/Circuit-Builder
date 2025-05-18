@@ -48,8 +48,11 @@ class FileLoader:
             wire = Wire(src_id, src_pin, dst_id, dst_pin, path)
             circuit.connect(wire)
 
+            src_id_obj = self.window.pin_lookup[(src_id, src_pin)]
+            dst_id_obj = self.window.pin_lookup[(dst_id, dst_pin)]
+
             # Create Gui Wire
-            gui_wire = GUICanvasWire(canvas, src_id, src_pin, dst_id, dst_pin)
+            gui_wire = GUICanvasWire(canvas, src_id_obj, dst_id_obj)
             for i in range(len(path)-1):
                 x0, y0 = path[i]
                 x1, y1 = path[i+1]
@@ -59,6 +62,10 @@ class FileLoader:
                 gui_wire.path.append((x0, y0))
 
             gui_wire.path.append(path[-1])
+
+            src_id_obj.wire = gui_wire
+            dst_id_obj.wire = gui_wire
+
             window.wire_lookup[(src_id, dst_id)] = gui_wire
             window.gui_lookup[src_id].wire = gui_wire
 
