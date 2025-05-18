@@ -1,6 +1,6 @@
 import window_helpers as wh
 from circuit import Component, Wire
-from gui_pin import GUIPin
+from pin import GUIPin
 from component import GUIComponent
 
 # class AndGate:
@@ -159,18 +159,20 @@ class AndGate(GUIComponent):
     def draw(self):
         body = wh.draw_rect(self.canvas, self.x - self.width/2, self.y - self.height/2, self.width, self.height, fill="#247ec4")
 
-        a = GUIPin(self.canvas, self.window, self.x - self.width/2, self.y + self.height/4, self.pin_radius, self.component_id, "A", is_input=True, draggable=False)
-        b = GUIPin(self.canvas, self.window, self.x - self.width/2, self.y - self.height/4, self.pin_radius, self.component_id, "B", is_input=True, draggable=False)
-        out = GUIPin(self.canvas, self.window, self.x + self.width/2, self.y, self.pin_radius, self.component_id, "OUT", False)
+        a = GUIPin(self.window, self.canvas, self.component_id, self.x - self.width/2, self.y + self.height/4, self.pin_radius, "A", is_input=True, draggable=False)
+        b = GUIPin(self.window, self.canvas, self.component_id, self.x - self.width/2, self.y - self.height/4, self.pin_radius, "B", is_input=True, draggable=False)
+        out = GUIPin(self.window, self.canvas, self.component_id, self.x + self.width/2, self.y, self.pin_radius, "OUT", False)
         text = wh.draw_text(self.canvas, self.x, self.y, "AND", fill="#ffffff")
 
         self.inputs["A"] = a
+        self.window.pin_lookup[(self.component_id, "A")] = a
         self.inputs["B"] = b
+        self.window.pin_lookup[(self.component_id, "B")] = b
         self.outputs["OUT"] = out
+        self.window.pin_lookup[(self.component_id, "OUT")] = out
 
-        self.component_shapes += [body, a.id, b.id, out.id, text]
+        self.component_shapes += [body, a.body, b.body, out.body, text]
 
     def add_component(self, window, id, x, y):
-        print(id)
         comp = Component(id, "AND", self.inputs, self.outputs, (x, y))
         window.circuit.add_component(comp)

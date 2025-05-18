@@ -57,14 +57,13 @@ class GUIComponent:
                 self.x = event.x
                 self.y = event.y
 
+                print(self.component_shapes)
                 for i in range(len(self.component_shapes)):
                     self.canvas.move(self.component_shapes[i], -dx, -dy)
 
-                for pin in self.inputs.values():
-                    pin.update_wires(event)
-
-                for pin in self.outputs.values():
-                    pin.update_wires(event)
+                for pin in {**self.inputs, **self.outputs}.values():
+                    if pin.wire:
+                        pin.wire.update_wire()
 
 
 

@@ -42,6 +42,8 @@ class FileLoader:
             dst_pin = wire_data["dst_pin"]
             path = wire_data["path"]
 
+            print(f"src_id: {src_id}, src_pin: {src_pin}, dst_id: {dst_id}, dst_pin: {dst_pin}")
+
             # Create logical wire
             wire = Wire(src_id, src_pin, dst_id, dst_pin, path)
             circuit.connect(wire)

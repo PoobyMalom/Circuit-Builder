@@ -76,6 +76,7 @@ class Window:
 
         self.wire_lookup = {}
         self.gui_lookup = {}
+        self.pin_lookup = {}
 
         self.wire_start = None
         self.drawing_wire = False
@@ -131,8 +132,10 @@ class Window:
         """
         if not self.drawing_wire:
             if not comp.is_input:
-                self.wire_start = (comp_id, pin, x, y)
-                self.curr_wire = GUICanvasWire(self.canvas, comp_id, pin, None, None)
+                src_pin_obj = self.pin_lookup[(comp_id, pin)]
+                self.wire_start = (comp_id, pin)
+
+                self.curr_wire = GUICanvasWire(self.canvas, src_pin_obj, None)
                 
                 comp.wire = self.curr_wire
                 self.curr_wire.create_wire(x, y)
@@ -143,11 +146,12 @@ class Window:
 
         else:
             if comp.is_input:
-                src_id, src_pin, _, _ = self.wire_start
+                src_id, src_pin = self.wire_start
                 dst_id, dst_pin = comp_id, pin
 
-                self.curr_wire.dst_pin = dst_id
-                self.curr_wire.dst_pin = dst_pin
+                self.curr_wire.src_pin = self.pin_lookup[self.wire_start]
+                self.curr_wire.dst_pin = self.pin_lookup[(comp_id, pin)]
+                
                 self.curr_wire.end_wire(x, y)
                 comp.wire = self.curr_wire
                 #self.circuit.components[comp.component_id].connected_wires += self.curr_wire.to_dict()

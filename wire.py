@@ -22,11 +22,9 @@ class GUICanvasWire:
         curr_wire (tk.Line): id of the current wire being drawn
         wire_pos (tuple(x, y)): Tuple representing the x and y position of the start of the current line segment
     """
-    def __init__(self, canvas, src_comp_id, src_pin, dst_comp_id, dst_pin):
+    def __init__(self, canvas, src_pin, dst_pin):
         self.canvas = canvas
-        self.src_comp_id = src_comp_id
         self.src_pin = src_pin
-        self.dst_comp_id = dst_comp_id
         self.dst_pin = dst_pin
         self.line_segs = []
         self.path = []
@@ -144,3 +142,37 @@ class GUICanvasWire:
     def update_color(self, state):
         for segment in self.line_segs:
             self.canvas.itemconfig(segment, fill="green" if state else "gray")
+
+    def update_wire(self):
+        x0, y0 = self.src_pin.get_pin_position()
+        xN, yN = self.dst_pin.get_pin_position()
+
+        if not self.path:
+            if self.line_segs:
+                self.canvas.coords(self.line_segs[0], x0, y0, xN, yN)
+
+        dx = x0 - self.path[0][0]
+        dy = y0 - self.path[0][1]
+
+        shifted = []
+        for (px, py) in self.path:
+            shifted.append((px + dx, py + dy))
+        shifted[-1] = (xN, yN)
+
+        seg_needed = len(shifted) - 1
+
+        while len(self.line_segs) < seg_needed:
+            seg_id = wh.draw_line(0, 0, 0, 0, fill="black", width=3)
+            self.line_segs.append(seg_id)
+            self.canvas.tag_lower(seg_id)
+        
+        for i in range(seg_needed):
+            xa, ya = shifted[i]
+            xb, yb = shifted[i + 1]
+            self.canvas.coords(self.line_segs[i], xa, ya, xb, yb)
+
+        for seg_id in self.line_segs[seg_needed:]:
+            self.canvas.delete(seg_id)
+        self.line_segs = self.line_segs[:seg_needed]
+
+        self.path = shifted

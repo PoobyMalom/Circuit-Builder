@@ -11,9 +11,12 @@ class GUIPin(GUIComponent):
         self.draggable = draggable
         self.state = 0
         self.wire = None
+        self.body = None
 
         self.draw()
         self.add_component(window, component_id, x, y)
+
+        window.pin_lookup[(component_id, pin_name)] = self
 
         canvas.tag_bind(self.component_shapes[0], "<ButtonPress-1>", self.start_drag)
         canvas.tag_bind(self.component_shapes[0], "<B1-Motion>", self.drag)
@@ -21,14 +24,14 @@ class GUIPin(GUIComponent):
         canvas.tag_bind(self.component_shapes[0], "<Button-2>", self.place_wire)
 
     def draw(self):
-        body = wh.draw_circle(self.canvas, self.x, self.y, self.radius, fill="black", outline="white")
+        self.body = wh.draw_circle(self.canvas, self.x, self.y, self.radius, fill="black", outline="white")
 
         if self.is_input:
             self.outputs["OUT"] = self
         else:
             self.inputs["IN"] = self
 
-        self.component_shapes.append(body)
+        self.component_shapes.append(self.body)
 
 
     def add_component(self, window, id, x, y):
@@ -105,6 +108,5 @@ class GUIPin(GUIComponent):
         direction = "IN" if self.is_input else "OUT"
         self.window.handle_wire_click(self, self.component_id, self.pin_name, self.x, self.y)
 
-    def update_wires(self, event, dx, dy):
-        wires = self.wire.line_segs
-        print(wires)
+    def get_pin_position(self):
+        return self._get_center_of(self.body)
