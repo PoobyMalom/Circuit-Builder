@@ -1,6 +1,6 @@
 """
 Filename: dropdown.py
-Description: Dropdown window class file 
+Description: Dropdown window class file
 
 Author: Toby Mallon
 Created: 4-28-2025
@@ -9,7 +9,8 @@ Created: 4-28-2025
 import tkinter as tk
 from pin import GUIPin
 
-class Dropdown():
+
+class Dropdown: # pylint: disable=too-many-instance-attributes
     """
     Represents a dropdown menu created by right clicking on the canvas
 
@@ -23,7 +24,8 @@ class Dropdown():
         context_menu (tk.Menu): dropdown menu constructor
         last_event (tk.Event): last event performed on the dropdown menu
     """
-    def __init__(self, root, window, frame, canvas, circuit, id_generator):
+
+    def __init__(self, root, window, frame, canvas, circuit, id_generator): # pylint: disable=too-many-arguments, too-many-positional-arguments
         self.root = root
         self.window = window
         self.frame = frame
@@ -53,9 +55,13 @@ class Dropdown():
             self.context_menu.add_command(label="Place Input", command=self.place_input)
 
         if event.x > self.frame.winfo_width() - 50:
-            self.context_menu.add_command(label="Place Output", command=self.place_output)
+            self.context_menu.add_command(
+                label="Place Output", command=self.place_output
+            )
         if self.window.hovered_component:
-            self.context_menu.add_command(label="Delete Component", command=self.delete_component)
+            self.context_menu.add_command(
+                label="Delete Component", command=self.delete_component
+            )
 
         self.context_menu.tk_popup(event.x_root, event.y_root)
 
@@ -71,16 +77,17 @@ class Dropdown():
         """
         if self.last_event:
             comp_id = self.id_generator.gen_id()
-            GUIPin(self.window, 
-                   self.canvas,  
-                   x=30, 
-                   y=self.last_event.y, 
-                   radius=15, 
-                   component_id=comp_id,
-                   pin_name="OUT",
-                   is_input=False,
-                   draggable=True
-                   )
+            GUIPin(
+                self.window,
+                self.canvas,
+                x=30,
+                y=self.last_event.y,
+                radius=15,
+                component_id=comp_id,
+                pin_name="OUT",
+                is_input=False,
+                draggable=True,
+            )
 
     def place_output(self):
         """
@@ -94,18 +101,21 @@ class Dropdown():
         """
         if self.last_event:
             comp_id = self.id_generator.gen_id()
-            GUIPin(self.window, 
-                   self.canvas, 
-                   x=self.frame.winfo_width() - 30, 
-                   y=self.last_event.y, 
-                   radius=15, 
-                   component_id=comp_id,
-                   pin_name="IN",
-                   is_input=True,
-                   draggable=True
-                   )
-            
+            GUIPin(
+                self.window,
+                self.canvas,
+                x=self.frame.winfo_width() - 30,
+                y=self.last_event.y,
+                radius=15,
+                component_id=comp_id,
+                pin_name="IN",
+                is_input=True,
+                draggable=True,
+            )
+
     def delete_component(self):
+        """ calls component delete logic
+        """
         self.window.hovered_component.delete()
         self.circuit.delete_component(self.window.hovered_component.logic_component)
         self.window.hovered_component = None

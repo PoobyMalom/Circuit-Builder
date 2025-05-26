@@ -1,9 +1,25 @@
+""" Module to define gui and logic for input or output pin
+"""
 from component import GUIComponent
 from circuit import Pin
 import window_helpers as wh
 
+
 class GUIPin(GUIComponent):
-    def __init__(self, window, canvas, component_id, x, y, radius, pin_name, is_input, draggable=False):
+    """ Class to control logic and gui elements for a pin object
+    """
+    def __init__(
+        self,
+        window,
+        canvas,
+        component_id,
+        x,
+        y,
+        radius,
+        pin_name,
+        is_input,
+        draggable=False,
+    ):
         super().__init__(window, canvas, component_id, x, y)
         self.radius = radius
         self.pin_name = pin_name
@@ -14,7 +30,7 @@ class GUIPin(GUIComponent):
         self.body = None
 
         self.draw()
-        self.add_component(window, component_id, x, y)
+        self.add_pin(window, component_id, x, y)
 
         window.pin_lookup[(component_id, pin_name)] = self
 
@@ -24,11 +40,17 @@ class GUIPin(GUIComponent):
         canvas.tag_bind(self.component_shapes[0], "<Button-2>", self.place_wire)
 
         if self.draggable:
-            canvas.tag_bind(self.component_shapes[0], "<Enter>", self.handle_hover_enter)
-            canvas.tag_bind(self.component_shapes[0], "<Leave>", self.handle_hover_leave)
+            canvas.tag_bind(
+                self.component_shapes[0], "<Enter>", self.handle_hover_enter
+            )
+            canvas.tag_bind(
+                self.component_shapes[0], "<Leave>", self.handle_hover_leave
+            )
 
     def draw(self):
-        self.body = wh.draw_circle(self.canvas, self.x, self.y, self.radius, fill="black", outline="white")
+        self.body = wh.draw_circle(
+            self.canvas, self.x, self.y, self.radius, fill="black", outline="white"
+        )
 
         if self.is_input:
             self.outputs["OUT"] = self
@@ -37,9 +59,12 @@ class GUIPin(GUIComponent):
 
         self.component_shapes.append(self.body)
 
-
-    def add_component(self, window, id, x, y):
-        self.logic_component = Pin(id, "INPUT" if self.is_input else "OUTPUT", [self.pin_name], (x, y))
+    def add_pin(self, window, comp_id, x, y):
+        """ Overide adding component due to this being a pin
+        """
+        self.logic_component = Pin(
+            comp_id, "INPUT" if self.is_input else "OUTPUT", [self.pin_name], (x, y)
+        )
         window.circuit.add_component(self.logic_component)
 
     def start_drag(self, event):
@@ -61,13 +86,11 @@ class GUIPin(GUIComponent):
             self.y = event.y
             self.canvas.coords(
                 self.component_shapes[0],
-                self.x - self.radius, self.y - self.radius,
-                self.x + self.radius, self.y + self.radius
+                self.x - self.radius,
+                self.y - self.radius,
+                self.x + self.radius,
+                self.y + self.radius,
             )
-
-            # If connected, update wire end
-            if self.wire:
-                self.wire.update_wire()
 
     def stop_drag(self, _):
         if not self.drag_started and not self.is_input:
@@ -93,15 +116,17 @@ class GUIPin(GUIComponent):
         self.window.circuit.evaluate()
 
     def set_state_color(self, logic_value):
-        self.canvas.itemconfig(self.component_shapes[0], fill=("green" if logic_value else "black"))
+        """ Sets state color based on logic value
+        """
+        self.canvas.itemconfig(
+            self.component_shapes[0], fill=("green" if logic_value else "black")
+        )
 
     def place_wire(self, event):
         """
         Trigger wire placement logic from Window.
         """
-        direction = "IN" if self.is_input else "OUT"
         if (event.x > 30) and (event.x < self.window.width - 30):
-            self.window.handle_wire_click(self, self.component_id, self.pin_name, self.x, self.y)
-
-    def get_pin_position(self):
-        return self._get_center_of(self.body)
+            self.window.handle_wire_click(
+                self, self.component_id, self.pin_name, self.x, self.y
+            )

@@ -6,6 +6,7 @@ Author: Toby Mallon
 Created: 4-28-2025
 """
 
+
 def draw_circle(canvas, x, y, radius, **kwargs):
     """
     Draws a circle on given canvas
@@ -20,7 +21,8 @@ def draw_circle(canvas, x, y, radius, **kwargs):
     Returns:
         Canvas oval object
     """
-    return canvas.create_oval(x-radius, y-radius, x+radius, y+radius, **kwargs)
+    return canvas.create_oval(x - radius, y - radius, x + radius, y + radius, **kwargs)
+
 
 def draw_rect(canvas, x, y, rect_width, rect_height, **kwargs):
     """
@@ -32,12 +34,13 @@ def draw_rect(canvas, x, y, rect_width, rect_height, **kwargs):
         y (int): Y-coordinate of the rectangles top left point
         rect_width (int): Width of the rectangle in pixels
         rect_height (int): Height of the rectangle in pixels
-        **kwargs: Additional options passed to `canvas.create_rectangle` (e.g., fill, outline, width)
+        # **kwargs: Additional options `canvas.create_rectangle` (e.g., fill, outline, width)
 
     Returns:
         Canvas rectangle object
     """
-    return canvas.create_rectangle(x, y, x+rect_width, y+rect_height, **kwargs)
+    return canvas.create_rectangle(x, y, x + rect_width, y + rect_height, **kwargs)
+
 
 def draw_line(canvas, x1, y1, x2, y2, **kwargs):
     """
@@ -55,6 +58,7 @@ def draw_line(canvas, x1, y1, x2, y2, **kwargs):
         Canvas line object
     """
     return canvas.create_line(x1, y1, x2, y2, **kwargs)
+
 
 def draw_text(canvas, x, y, text, **kwargs):
     """

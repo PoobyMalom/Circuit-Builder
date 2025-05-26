@@ -1,21 +1,28 @@
+""" Module to load circuit based on json file
+"""
+
 import json
-import tkinter as tk
-from circuit import Wire
-from andgate import AndGate    
-from pin import GUIPin
-from wire import GUICanvasWire
-import window_helpers as wh
 import re
 
+import window_helpers as wh
+from andgate import AndGate
+from circuit import Wire
+from pin import GUIPin
+from wire import GUICanvasWire
+
+
 class FileLoader:
-    def __init__(self, file_name, circuit, canvas, window):
+    """ Class to handle reading and reconstructing circuit data
+    """
+    def __init__(self, file_name, circuit, canvas, window): # pylint: disable=too-many-locals
+        # TODO for the love of god move most of this from init into their own functions
         self.file_name = file_name
         self.circuit = circuit
         self.canvas = canvas
         self.window = window
 
         # Open json save file
-        with open(f"components/{file_name}", "r") as f:
+        with open(f"components/{file_name}", "r", encoding='utf-8') as f:
             data = json.load(f)
 
         # Instatiate highest level json elements
@@ -28,7 +35,9 @@ class FileLoader:
 
         # create each gui component replace placeholder in lookup table
         for component_data in self.components:
-            self.instantiate_component(component_data, self.circuit, self.canvas, self.window)
+            self.instantiate_component(
+                component_data, self.canvas, self.window
+            )
 
         print("----------------")
         self.window.circuit.print_topological_order()
@@ -42,7 +51,9 @@ class FileLoader:
             dst_pin = wire_data["dst_pin"]
             path = wire_data["path"]
 
-            print(f"src_id: {src_id}, src_pin: {src_pin}, dst_id: {dst_id}, dst_pin: {dst_pin}")
+            print(
+                f"src_id: {src_id}, src_pin: {src_pin}, dst_id: {dst_id}, dst_pin: {dst_pin}"
+            )
 
             # Create logical wire
             wire = Wire(src_id, src_pin, dst_id, dst_pin, path)
@@ -53,9 +64,9 @@ class FileLoader:
 
             # Create Gui Wire
             gui_wire = GUICanvasWire(canvas, src_id_obj, dst_id_obj)
-            for i in range(len(path)-1):
+            for i in range(len(path) - 1):
                 x0, y0 = path[i]
-                x1, y1 = path[i+1]
+                x1, y1 = path[i + 1]
                 line = wh.draw_line(canvas, x0, y0, x1, y1, fill="black", width=3)
                 self.canvas.tag_lower(line)
                 gui_wire.line_segs.append(line)
@@ -73,22 +84,26 @@ class FileLoader:
         self.window.canvas.focus_set()
 
         # Set id generator to start after highest number in json ids
-        comp_nums = [list(map(int, re.findall(r'\d+', num)))[0] for num in self.window.gui_lookup.keys()]
+        comp_nums = [
+            list(map(int, re.findall(r"\d+", num)))[0]
+            for num in self.window.gui_lookup.keys()
+        ]
         self.window.id_generator.counter = max(comp_nums) + 1
 
-
-
-    def instantiate_component(self, comp_data, circuit, canvas, window):
-        id = comp_data["id"]
-        type = comp_data["type"]
+    def instantiate_component(self, comp_data, canvas, window):
+        """ Instatiates given component based on its component data
+        """
+        comp_id = comp_data["id"]
         x, y = comp_data["pos"]
 
+        gui: GUIPin | AndGate
+
         if type == "INPUT":
-            gui = GUIPin(window, canvas, id, x, y, 15, "IN", True, True)
+            gui = GUIPin(window, canvas, comp_id, x, y, 15, "IN", True, True)
         elif type == "OUTPUT":
-            gui = GUIPin(window, canvas, id, x, y, 15, "OUT", False, True)
+            gui = GUIPin(window, canvas, comp_id, x, y, 15, "OUT", False, True)
         elif type == "AND":
-            gui = AndGate(window, canvas, id, x, y)
+            gui = AndGate(window, canvas, comp_id, x, y)
         elif type == "NOT":
             pass
         elif type == "SUBCIRCUIT":
@@ -96,4 +111,4 @@ class FileLoader:
         else:
             raise LookupError(type)
 
-        window.gui_lookup[id] = gui
+        window.gui_lookup[comp_id] = gui

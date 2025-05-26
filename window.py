@@ -7,23 +7,25 @@ Created: 4-28-2025
 """
 
 import tkinter as tk
-from tkinter import ttk
 import window_helpers as wh
 from dropdown import Dropdown
 from circuit import Circuit, ComponentIDGenerator, Wire
 from wire import GUICanvasWire
-from andgate import AndGate 
+from andgate import AndGate
 from notgate import NotGate
 from toolbar import Toolbar
 from ghost import Ghost
 
-class Window:
+
+class Window:  # pylint: disable=too-many-instance-attributes
+    # TODO Clean up instance attributes. distribute into objects.
     """
     Main GUI window for the circuit builder application.
 
     Manages the canvas, circuit data structure, dropdown context menus,
     and interactive wire placement between input and output components.
     """
+
     def __init__(self, root, width=800, height=600):
         """
         Initializes the main application window, canvas, and layout.
@@ -42,12 +44,11 @@ class Window:
 
         self.root.title("Circuit Builder")
         self.root.geometry(f"{width}x{height}")
-    
 
-         # Main canvas frame
+        # Main canvas frame
         self.frame = tk.Frame(root)
-        self.frame.place(x=0, y=0, relwidth=1.0, relheight=1.0, anchor='nw')  # Leaves 30px space on each side
-
+        self.frame.place(x=0, y=0, relwidth=1.0, relheight=1.0, anchor="nw")
+        # Leaves 30px space on each side
 
         self.canvas = tk.Canvas(self.frame, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -61,19 +62,26 @@ class Window:
         self.canvas.bind("n", self.test_not)
         self.canvas.bind("t", self.print_hovered)
         self.canvas.bind("d", self.test_wire_bullshit)
-        
 
-        self.dropdown = Dropdown(self.root, self, self.frame, self.canvas, self.circuit, self.id_generator)
+        self.dropdown = Dropdown(
+            self.root, self, self.frame, self.canvas, self.circuit, self.id_generator
+        )
 
         # Bottom toolbar (overlaps input/output bars)
         self.toolbar = Toolbar(self.frame, self)
-       
-        
 
         self.root.bind("<Configure>", self.resize_window)
-        #self.root.lift()
+        # self.root.lift()
         self.root.attributes("-topmost", True)
-        self.rect_id = wh.draw_rect(self.canvas, 30, 10, self.width - 60, self.height - 50, outline="#444444", width=2)
+        self.rect_id = wh.draw_rect(
+            self.canvas,
+            30,
+            10,
+            self.width - 60,
+            self.height - 50,
+            outline="#444444",
+            width=2,
+        )
 
         self.wire_lookup = {}
         self.gui_lookup = {}
@@ -99,8 +107,9 @@ class Window:
             self.width = event.width
 
             if self.rect_id is not None:
-                self.canvas.coords(self.rect_id, 30, 10, self.width - 30, self.height - 50)
-
+                self.canvas.coords(
+                    self.rect_id, 30, 10, self.width - 30, self.height - 50
+                )
 
     def handle_right_click(self, event):
         """
@@ -109,8 +118,6 @@ class Window:
         Args:
             event (tk.Event): The mouse click event.
         """
-        x, y = event.x, event.y
-
         self.dropdown.show_context_menu(event)
 
     def print_circuit(self, _):
@@ -139,7 +146,7 @@ class Window:
                 self.wire_start = (comp_id, pin)
 
                 self.curr_wire = GUICanvasWire(self.canvas, src_pin_obj, None)
-                
+
                 comp.wire.append(self.curr_wire)
                 self.curr_wire.create_wire(x, y)
                 self.drawing_wire = True
@@ -154,10 +161,9 @@ class Window:
 
                 self.curr_wire.src_pin = self.pin_lookup[self.wire_start]
                 self.curr_wire.dst_pin = self.pin_lookup[(comp_id, pin)]
-                
+
                 self.curr_wire.end_wire(x, y)
                 comp.wire.append(self.curr_wire)
-                #self.circuit.components[comp.component_id].connected_wires += self.curr_wire.to_dict()
 
                 wire = Wire(src_id, src_pin, dst_id, dst_pin, self.curr_wire.path)
                 self.circuit.connect(wire)
@@ -190,31 +196,49 @@ class Window:
         if self.drawing_wire and self.curr_wire:
             self.curr_wire.curve_wire(event.x, event.y)
 
+    # TODO Delete all these stupid ass functions
+
     def test_and(self, event):
+        """ Test function for placing and gates
+        """
         AndGate(self, self.canvas, self.id_generator.gen_id(), event.x, event.y)
 
-    def test_eval(self, event):
+    def test_eval(self, _):
+        """ Test function for evaluating circuits
+        """
         self.circuit.evaluate()
 
     def test_not(self, event):
+        """ Test function for testing not gates
+        """
         NotGate(self, self.canvas, self.id_generator.gen_id(), event.x, event.y)
 
-    def print_hovered(self, event):
+    def print_hovered(self, _):
+        """ Test function for prints connected wires
+        """
         for _, value in self.circuit.components.items():
             print(value.connected_wires)
 
     def remove_gui_wire(self, src_id, dst_id):
+        """ Function to remove gui wires from the canvas
+        """
+        # TODO delete this i think nothing uses it anymore
         key = (src_id, dst_id)
         if key in self.wire_lookup:
             wire = self.wire_lookup.pop(key)
             for seg in wire.line_segs:
                 self.canvas.delete(seg)
 
-    def test_wire_bullshit(self, event):
+    def test_wire_bullshit(self, _):
+        """ Prints wire lookup????
+        """
+        # TODO DELETE BULLSHIT
         print(self.wire_lookup)
-        
 
     def refresh_gui_from_logic(self):
+        """ Refreshes gui based on updated logic
+        """
+        # TODO this is outdated fairly sure this is implemented in the circuit now
         for comp_id, comp in self.circuit.components.items():
             if comp.type == "INPUT":
                 logic_value = comp.inputs["IN"]
@@ -222,6 +246,8 @@ class Window:
                 gui_pin.set_state_color(logic_value)
 
     def add_component(self, comp_type):
+        """ Adds ghost component and bindings
+        """
         self.canvas.focus_set()
         self.placing_type = comp_type
         self.canvas.config(cursor="crosshair")
@@ -231,19 +257,21 @@ class Window:
         print(self.ghost)
 
         self._ghost_move_id = self.canvas.bind("<Motion>", self._ghost_move, add="+")
-        self._ghost_click_id = self.canvas.bind("<Button-1>", self._ghost_place, add="+")
+        self._ghost_click_id = self.canvas.bind(
+            "<Button-1>", self._ghost_place, add="+"
+        )
 
     def _ghost_move(self, event):
-        if not self.placing_type: 
+        if not self.placing_type:
             return
 
         print("moving")
         new_x, new_y = event.x, event.y
         self.ghost.move(new_x, new_y)
 
-
     def _ghost_place(self, event):
-        if not self.placing_type: return
+        if not self.placing_type:
+            return
 
         if self.placing_type == "AND":
             gate = AndGate(
@@ -251,7 +279,7 @@ class Window:
                 self.canvas,
                 component_id=self.id_generator.gen_id(),
                 x=event.x,
-                y=event.y
+                y=event.y,
             )
         elif self.placing_type == "NOT":
             gate = NotGate(
@@ -259,7 +287,7 @@ class Window:
                 self.canvas,
                 component_id=self.id_generator.gen_id(),
                 x=event.x,
-                y=event.y
+                y=event.y,
             )
 
         self.ghost.delete()
@@ -271,7 +299,10 @@ class Window:
         self.canvas.unbind("<Button-1>", self._ghost_click_id)
 
     def draw_ghost_gate(self, comp_type, x, y):
+        """ Draws ghost gate
+        """
         if comp_type == "AND":
             return Ghost(self, self.canvas, x, y, 50, 30, "#247ec4")
-        elif comp_type == "NOT":
+        if comp_type == "NOT":
             return Ghost(self, self.canvas, x, y, 50, 30, "#a0241c")
+        return TypeError("UH you fucked up this implementation")
