@@ -1,13 +1,13 @@
-""" Module to define gui and logic for input or output pin
-"""
+"""Module to define gui and logic for input or output pin"""
+
 from component import GUIComponent
 from circuit import Pin
 import window_helpers as wh
 
 
 class GUIPin(GUIComponent):
-    """ Class to control logic and gui elements for a pin object
-    """
+    """Class to control logic and gui elements for a pin object"""
+
     def __init__(
         self,
         window,
@@ -60,8 +60,7 @@ class GUIPin(GUIComponent):
         self.component_shapes.append(self.body)
 
     def add_pin(self, window, comp_id, x, y):
-        """ Overide adding component due to this being a pin
-        """
+        """Overide adding component due to this being a pin"""
         self.logic_component = Pin(
             comp_id, "INPUT" if self.is_input else "OUTPUT", [self.pin_name], (x, y)
         )
@@ -116,8 +115,7 @@ class GUIPin(GUIComponent):
         self.window.circuit.evaluate()
 
     def set_state_color(self, logic_value):
-        """ Sets state color based on logic value
-        """
+        """Sets state color based on logic value"""
         self.canvas.itemconfig(
             self.component_shapes[0], fill=("green" if logic_value else "black")
         )
@@ -127,6 +125,8 @@ class GUIPin(GUIComponent):
         Trigger wire placement logic from Window.
         """
         if (event.x > 30) and (event.x < self.window.width - 30):
-            self.window.handle_wire_click(
-                self, self.component_id, self.pin_name, self.x, self.y
-            )
+            self.window.handle_pin_click(self)
+
+    def get_pin_position(self):
+        x0, y0, x1, y1 = self.canvas.coords(self.body)
+        return ((x0 + x1) / 2, (y0 + y1) / 2)

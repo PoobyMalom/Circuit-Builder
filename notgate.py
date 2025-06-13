@@ -1,13 +1,13 @@
-""" Module to handle gui and logic for logical not gate
-"""
+"""Module to handle gui and logic for logical not gate"""
+
 import window_helpers as wh
 from pin import GUIPin
 from component import GUIComponent
 
 
 class NotGate(GUIComponent):
-    """ Class to define gui component for logical and gate
-    """
+    """Class to define gui component for logical and gate"""
+
     def __init__(self, window, canvas, component_id, x, y):
         super().__init__(window, canvas, component_id, x, y)
 

@@ -1,5 +1,4 @@
-""" Module to load circuit based on json file
-"""
+"""Module to load circuit based on json file"""
 
 import json
 import re
@@ -12,9 +11,11 @@ from wire import GUICanvasWire
 
 
 class FileLoader:
-    """ Class to handle reading and reconstructing circuit data
-    """
-    def __init__(self, file_name, circuit, canvas, window): # pylint: disable=too-many-locals
+    """Class to handle reading and reconstructing circuit data"""
+
+    def __init__(
+        self, file_name, circuit, canvas, window
+    ):  # pylint: disable=too-many-locals
         # TODO for the love of god move most of this from init into their own functions
         self.file_name = file_name
         self.circuit = circuit
@@ -22,7 +23,7 @@ class FileLoader:
         self.window = window
 
         # Open json save file
-        with open(f"components/{file_name}", "r", encoding='utf-8') as f:
+        with open(f"components/{file_name}", "r", encoding="utf-8") as f:
             data = json.load(f)
 
         # Instatiate highest level json elements
@@ -35,9 +36,7 @@ class FileLoader:
 
         # create each gui component replace placeholder in lookup table
         for component_data in self.components:
-            self.instantiate_component(
-                component_data, self.canvas, self.window
-            )
+            self.instantiate_component(component_data, self.canvas, self.window)
 
         print("----------------")
         self.window.circuit.print_topological_order()
@@ -70,6 +69,7 @@ class FileLoader:
                 line = wh.draw_line(canvas, x0, y0, x1, y1, fill="black", width=3)
                 self.canvas.tag_lower(line)
                 gui_wire.line_segs.append(line)
+                self.canvas.tag_bind(line, "<Button-1>", gui_wire.add_ghost_node)
                 gui_wire.path.append((x0, y0))
 
             gui_wire.path.append(path[-1])
@@ -91,24 +91,24 @@ class FileLoader:
         self.window.id_generator.counter = max(comp_nums) + 1
 
     def instantiate_component(self, comp_data, canvas, window):
-        """ Instatiates given component based on its component data
-        """
+        """Instatiates given component based on its component data"""
         comp_id = comp_data["id"]
+        comp_type = comp_data["type"]
         x, y = comp_data["pos"]
 
         gui: GUIPin | AndGate
 
-        if type == "INPUT":
+        if comp_type == "INPUT":
             gui = GUIPin(window, canvas, comp_id, x, y, 15, "IN", True, True)
-        elif type == "OUTPUT":
+        elif comp_type == "OUTPUT":
             gui = GUIPin(window, canvas, comp_id, x, y, 15, "OUT", False, True)
-        elif type == "AND":
+        elif comp_type == "AND":
             gui = AndGate(window, canvas, comp_id, x, y)
-        elif type == "NOT":
+        elif comp_type == "NOT":
             pass
-        elif type == "SUBCIRCUIT":
+        elif comp_type == "SUBCIRCUIT":
             pass
         else:
-            raise LookupError(type)
+            raise LookupError(comp_type)
 
         window.gui_lookup[comp_id] = gui

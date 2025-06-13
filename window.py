@@ -10,7 +10,7 @@ import tkinter as tk
 import window_helpers as wh
 from dropdown import Dropdown
 from circuit import Circuit, ComponentIDGenerator, Wire
-from wire import GUICanvasWire
+from wire import GUICanvasWire, WireController
 from andgate import AndGate
 from notgate import NotGate
 from toolbar import Toolbar
@@ -95,6 +95,8 @@ class Window:  # pylint: disable=too-many-instance-attributes
         self.placing_type = None
         self.ghost = None
 
+        self.wire_ctrl = WireController(self.canvas, self.circuit, self)
+
     def resize_window(self, event):
         """
         Handles resizing of the main window and updates the canvas boundary box.
@@ -127,9 +129,9 @@ class Window:  # pylint: disable=too-many-instance-attributes
         Args:
             event (tk.Event): The keypress event triggering the print.
         """
-        print(self.circuit.print_topological_order())
+        print(self.circuit)
 
-    def handle_wire_click(self, comp, comp_id, pin, x, y):
+    def handle_pin_click(self, pin):
         """
         Handles logic for beginning or completing a wire connection between components.
 
@@ -140,41 +142,10 @@ class Window:  # pylint: disable=too-many-instance-attributes
             x (int): X-coordinate of the click.
             y (int): Y-coordinate of the click.
         """
-        if not self.drawing_wire:
-            if not comp.is_input:
-                src_pin_obj = self.pin_lookup[(comp_id, pin)]
-                self.wire_start = (comp_id, pin)
-
-                self.curr_wire = GUICanvasWire(self.canvas, src_pin_obj, None)
-
-                comp.wire.append(self.curr_wire)
-                self.curr_wire.create_wire(x, y)
-                self.drawing_wire = True
-            else:
-                print("Cannot end a wire on an output pin.")
-                return
-
+        if self.wire_ctrl.active:
+            self.wire_ctrl.commit(pin)
         else:
-            if comp.is_input:
-                src_id, src_pin = self.wire_start
-                dst_id, dst_pin = comp_id, pin
-
-                self.curr_wire.src_pin = self.pin_lookup[self.wire_start]
-                self.curr_wire.dst_pin = self.pin_lookup[(comp_id, pin)]
-
-                self.curr_wire.end_wire(x, y)
-                comp.wire.append(self.curr_wire)
-
-                wire = Wire(src_id, src_pin, dst_id, dst_pin, self.curr_wire.path)
-                self.circuit.connect(wire)
-                self.wire_lookup.setdefault((src_id, dst_id), []).append(self.curr_wire)
-
-                self.drawing_wire = False
-                self.curr_wire = None
-                self.wire_start = None
-            else:
-                print("Cannot end a wire on an input pin.")
-                return
+            self.wire_ctrl.start(pin)
 
     def draw_wire(self, event):
         """
@@ -199,45 +170,38 @@ class Window:  # pylint: disable=too-many-instance-attributes
     # TODO Delete all these stupid ass functions
 
     def test_and(self, event):
-        """ Test function for placing and gates
-        """
+        """Test function for placing and gates"""
         AndGate(self, self.canvas, self.id_generator.gen_id(), event.x, event.y)
 
     def test_eval(self, _):
-        """ Test function for evaluating circuits
-        """
+        """Test function for evaluating circuits"""
         self.circuit.evaluate()
 
     def test_not(self, event):
-        """ Test function for testing not gates
-        """
+        """Test function for testing not gates"""
         NotGate(self, self.canvas, self.id_generator.gen_id(), event.x, event.y)
 
     def print_hovered(self, _):
-        """ Test function for prints connected wires
-        """
+        """Test function for prints connected wires"""
         for _, value in self.circuit.components.items():
             print(value.connected_wires)
 
     def remove_gui_wire(self, src_id, dst_id):
-        """ Function to remove gui wires from the canvas
-        """
+        """Function to remove gui wires from the canvas"""
         # TODO delete this i think nothing uses it anymore
         key = (src_id, dst_id)
         if key in self.wire_lookup:
-            wire = self.wire_lookup.pop(key)
-            for seg in wire.line_segs:
-                self.canvas.delete(seg)
+            for wire in self.wire_lookup.pop(key):
+                for seg in wire.line_segs:
+                    self.canvas.delete(seg)
 
     def test_wire_bullshit(self, _):
-        """ Prints wire lookup????
-        """
+        """Prints wire lookup????"""
         # TODO DELETE BULLSHIT
         print(self.wire_lookup)
 
     def refresh_gui_from_logic(self):
-        """ Refreshes gui based on updated logic
-        """
+        """Refreshes gui based on updated logic"""
         # TODO this is outdated fairly sure this is implemented in the circuit now
         for comp_id, comp in self.circuit.components.items():
             if comp.type == "INPUT":
@@ -246,8 +210,7 @@ class Window:  # pylint: disable=too-many-instance-attributes
                 gui_pin.set_state_color(logic_value)
 
     def add_component(self, comp_type):
-        """ Adds ghost component and bindings
-        """
+        """Adds ghost component and bindings"""
         self.canvas.focus_set()
         self.placing_type = comp_type
         self.canvas.config(cursor="crosshair")
@@ -299,8 +262,7 @@ class Window:  # pylint: disable=too-many-instance-attributes
         self.canvas.unbind("<Button-1>", self._ghost_click_id)
 
     def draw_ghost_gate(self, comp_type, x, y):
-        """ Draws ghost gate
-        """
+        """Draws ghost gate"""
         if comp_type == "AND":
             return Ghost(self, self.canvas, x, y, 50, 30, "#247ec4")
         if comp_type == "NOT":

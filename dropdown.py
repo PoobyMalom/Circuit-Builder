@@ -10,7 +10,7 @@ import tkinter as tk
 from pin import GUIPin
 
 
-class Dropdown: # pylint: disable=too-many-instance-attributes
+class Dropdown:  # pylint: disable=too-many-instance-attributes
     """
     Represents a dropdown menu created by right clicking on the canvas
 
@@ -25,7 +25,9 @@ class Dropdown: # pylint: disable=too-many-instance-attributes
         last_event (tk.Event): last event performed on the dropdown menu
     """
 
-    def __init__(self, root, window, frame, canvas, circuit, id_generator): # pylint: disable=too-many-arguments, too-many-positional-arguments
+    def __init__(
+        self, root, window, frame, canvas, circuit, id_generator
+    ):  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self.root = root
         self.window = window
         self.frame = frame
@@ -114,8 +116,7 @@ class Dropdown: # pylint: disable=too-many-instance-attributes
             )
 
     def delete_component(self):
-        """ calls component delete logic
-        """
+        """calls component delete logic"""
         self.window.hovered_component.delete()
         self.circuit.delete_component(self.window.hovered_component.logic_component)
         self.window.hovered_component = None

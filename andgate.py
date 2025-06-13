@@ -1,5 +1,4 @@
-""" Class to handle gui and logic for logical and gate
-"""
+"""Class to handle gui and logic for logical and gate"""
 
 import window_helpers as wh
 from pin import GUIPin
@@ -7,9 +6,11 @@ from component import GUIComponent
 
 
 class AndGate(GUIComponent):
-    """ Class to define gui component for logical and gate
-    """
-    def __init__(self, window, canvas, component_id, x, y): # pylint: disable=too-many-arguments, too-many-positional-arguments
+    """Class to define gui component for logical and gate"""
+
+    def __init__(
+        self, window, canvas, component_id, x, y
+    ):  # pylint: disable=too-many-arguments, too-many-positional-arguments
         super().__init__(window, canvas, component_id, x, y)
 
         self.width = 50

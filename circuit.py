@@ -21,7 +21,9 @@ class Component:
         connections (str[]): list of connections to other components
     """
 
-    def __init__(self, comp_id, comp_type, inputs, outputs, pos): # pylint: disable=too-many-arguments, too-many-positional-arguments
+    def __init__(
+        self, comp_id, comp_type, inputs, outputs, pos
+    ):  # pylint: disable=too-many-arguments, too-many-positional-arguments
         self.id = comp_id
         self.pos = pos
         self.type = comp_type  # AND, OR, NOT
@@ -31,8 +33,7 @@ class Component:
         self.connected_wires = []
 
     def to_dict(self):
-        """ Turns object into json serializable format
-        """
+        """Turns object into json serializable format"""
         return {
             "id": self.id,
             "pos": self.pos,
@@ -84,12 +85,11 @@ class Pin(Component):
             super().__init__(comp_id, pin_name, output_pin, [], pos)
 
     def set_output(self, pin, value):
-        """ Sets specific pin output value
-        """
+        """Sets specific pin output value"""
         self.outputs[pin] = value
 
 
-class Wire: # pylint: disable=too-few-public-methods
+class Wire:  # pylint: disable=too-few-public-methods
     """
     Represents a wire drawn on the canvas connecting two components.
 
@@ -101,7 +101,9 @@ class Wire: # pylint: disable=too-few-public-methods
         dst_pin (str): Name of the destination pin.
     """
 
-    def __init__(self, src_comp_id, src_pin, dst_comp_id, dst_pin, path): # pylint: disable=too-many-arguments, too-many-positional-arguments
+    def __init__(
+        self, src_comp_id, src_pin, dst_comp_id, dst_pin, path
+    ):  # pylint: disable=too-many-arguments, too-many-positional-arguments
         # TODO maybe turn src, dist pins and ids into some type of dictionary or tuple set
         self.src_comp_id = src_comp_id
         self.src_pin = src_pin
@@ -110,8 +112,7 @@ class Wire: # pylint: disable=too-few-public-methods
         self.path = path
 
     def to_dict(self):
-        """ Turns object into json serializable format
-        """
+        """Turns object into json serializable format"""
         return {
             "src_id": self.src_comp_id,
             "src_pin": self.src_pin,
@@ -135,9 +136,16 @@ class Circuit:
         self.components = {}
         self.wires = []
 
+    def __str__(self):
+        print_out = ""
+        for key, comp in self.components.items():
+            print_out += f"{key}: {comp} \n"
+            print_out += f"{key}: {comp.inputs} \n"
+            print_out += f"{key}: {comp.outputs} \n"
+        return print_out
+
     def to_dict(self):
-        """ Turns object into json serializable format
-        """
+        """Turns object into json serializable format"""
         print(self.wires)
         return {
             "components": [comp.to_dict() for comp in self.components.values()],
@@ -157,8 +165,7 @@ class Circuit:
         self.components[component.id] = component
 
     def delete_component(self, component):
-        """ Deletes component from circuit logic and removes gui
-        """
+        """Deletes component from circuit logic and removes gui"""
         for _, targets in component.connections.items():
             for dst_id, dst_pin in targets:
                 if dst_id in self.components:
@@ -196,7 +203,9 @@ class Circuit:
         """
         self.wires.append(wire)
         src = self.components[wire.src_comp_id]
+        print(src)
         dst = self.components[wire.dst_comp_id]
+        print(dst)
         src.connections[wire.src_pin].append((dst.id, wire.dst_pin))
 
     def print_topological_order(self):
@@ -250,8 +259,7 @@ class Circuit:
 
     # TODO figure out better way to calculate logic order
     def topological_sort(self):
-        """ Basic topological sort to calculate logic order
-        """
+        """Basic topological sort to calculate logic order"""
         # Build the adjacency list and in-degree count
         graph = defaultdict(list)
         in_degree = defaultdict(int)
@@ -281,21 +289,26 @@ class Circuit:
         return sorted_order
 
     def evaluate(self):
-        """ Computes component value and every wire value
-        """
-         # ── PASS 1 ──  compute every component in topo order
+        for comp in self.components.values():
+            for pin in comp.inputs:
+                comp.inputs[pin] = False
+
         for cid in self.topological_sort():
-            self.components[cid].compute()
+            component = self.components[cid]
+            component.compute()
+            print(component)
 
-        # ── PASS 2 ──  propagate every wire once
-        for w in self.wires:
-            value = self.components[w.src_comp_id].outputs[w.src_pin]
-            self.components[w.dst_comp_id].inputs[w.dst_pin] = value
+            for pin, output_value in component.outputs.items():
+                for dst_id, dst_pin in component.connections[pin]:
+                    current = self.components[dst_id].inputs.get(dst_pin, False)
+                    self.components[dst_id].inputs[dst_pin] = current or output_value
 
-            if self.window.wire_lookup:
-                for gui_wire in self.window.wire_lookup.get(
-                        (w.src_comp_id, w.dst_comp_id), []):
-                    gui_wire.update_color(value)
+                    if self.window.wire_lookup is not None:
+                        key = (component.id, dst_id)
+                        gui_wires = self.window.wire_lookup.get(key)
+                        if gui_wires:
+                            for wire in gui_wires:
+                                wire.update_color(output_value)
         self.window.refresh_gui_from_logic()
         print("------------------------------------------------------------------- \n")
 
