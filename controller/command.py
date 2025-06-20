@@ -43,7 +43,7 @@ class AddGateCommand(Command):
     self.position: Tuple[int, int] = position
     self.gate_id: str = gate_id
     self.circuit: Circuit = circuit
-    self.component = None
+    self.component: Component | None = None
 
   def execute(self) -> None:
     self.component = build_component(self.gate_type, self.position, self.gate_id)
@@ -66,8 +66,8 @@ class MoveCommand(Command):
 
   def __init__(self, gate_id: str):
     self.gate_id: str = gate_id
-    self.old_position: Tuple[int, int] = None
-    self.new_position: Tuple[int, int] = None
+    self.old_position: Tuple[int, int] | None = None
+    self.new_position: Tuple[int, int] | None = None
 
   def execute(self):
     """
@@ -100,7 +100,7 @@ class DeleteCommand(Command):
   """
   def __init__(self, component: Component, circuit: Circuit):
     self.component: Component = component
-    self.connections: List = None # TODO implement find wire connections to the component
+    self.connections: List | None = None # TODO implement find wire connections to the component
     self.circuit: Circuit = circuit
 
   def execute(self):
@@ -133,10 +133,10 @@ class AddWireCommand(Command):
 
   def __init__(self, src_pin: Pin, wire_id: str, circuit: Circuit):
     self.src_pin: Pin = src_pin
-    self.dst_pin: Pin = None
+    self.dst_pin: Pin | None = None
     self.wire_id: str = wire_id
     self.circuit: Circuit = circuit
-    self.wire: Wire = None
+    self.wire: Wire | None = None
     # TODO implement gui wire
 
   def execute(self):

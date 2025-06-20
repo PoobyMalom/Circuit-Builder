@@ -16,10 +16,10 @@ class WireController:
 
   def __init__(self, circuit: Circuit):
     self.is_drawing: bool = False
-    self.start_pin: Pin = None
-    self.start_component_id: str = None
+    self.start_pin: Pin | None = None
+    self.start_component_id: str | None = None
     self.circuit: Circuit = circuit
-    self.current_preview_position: Tuple[int, int] = None
+    self.current_preview_position: Tuple[int, int] | None = None
 
     event_bus.subscribe("pin_clicked", self.handle_pin_clicked)
     event_bus.subscribe("mouse_moved", self.update_preview)
@@ -51,7 +51,7 @@ class WireController:
     """
     # TODO switch over to using commands for this
 
-    wire = Wire(self.start_pin.pid, self.start_pin.pin_name, end_pin.pid, end_pin.pin_name)
+    wire = Wire(self.start_pin.pid, self.start_pin.pin_name, end_pin.pid, end_pin.pin_name) # type: ignore
     self.circuit.wires.append(wire)
     event_bus.publish("wire_committed")
 
@@ -67,9 +67,9 @@ class WireController:
     """
     Cancels wire
     """
-    self.is_drawing: bool = False
-    self.start_pin: Pin = None
-    self.start_component_id: str = None
-    self.current_preview_position: Tuple[int, int] = None
+    self.is_drawing = False
+    self.start_pin = None
+    self.start_component_id = None
+    self.current_preview_position= None
 
     event_bus.publish("wire_cancelled")

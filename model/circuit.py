@@ -92,14 +92,14 @@ class Circuit:
         for pin in comp.inputs.keys():
           comp.inputs[pin] = False
 
-    for cid in self._topological_sort():
-      self.components[cid].compute()
-
-    for wire in self.wires:
-      src_comp_id, src_pin_name = wire.src_id, wire.src_pin
-      dst_comp_id, dst_pin_name = wire.dst_id, wire.dst_pin
-
-      value = self.components[src_comp_id].outputs[src_pin_name].value
-
-      dst_pin = self.components[dst_comp_id].inputs[dst_pin_name]
-      dst_pin.value = dst_pin.value or value
+    order = self._topological_sort()
+    for cid in order:
+      component = self.components[cid]
+      component.compute()
+      
+      for wire in [w for w in self.wires if w.src_id == cid]:
+        dst_comp_id, dst_pin_name = wire.dst_id, wire.dst_pin
+        value = component.outputs[wire.src_pin]
+        self.components[dst_comp_id].inputs[dst_pin_name] = (
+          self.components[dst_comp_id].inputs[dst_pin_name] or value
+        )
