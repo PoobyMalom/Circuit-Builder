@@ -12,5 +12,6 @@ class Pin:
     """
 
   pid: str
+  pin_name: str
   value: bool
   is_input: bool

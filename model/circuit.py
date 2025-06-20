@@ -64,8 +64,8 @@ class Circuit:
       in_degree[cid] = 0
 
     for wire in self.wires:
-      graph[wire.src_comp_id].append(wire.dst_comp_id)
-      in_degree[wire.dst_comp_id] += 1
+      graph[wire.src_id].append(wire.dst_id)
+      in_degree[wire.dst_id] += 1
 
     queue = deque([cid for cid, deg in in_degree.items() if deg == 0])
     sorted_order = []
@@ -89,15 +89,15 @@ class Circuit:
 
     for comp in self.components.values():
       if comp.type != "INPUT":
-        for pin in comp.inputs.values():
-          pin.value = False
+        for pin in comp.inputs.keys():
+          comp.inputs[pin] = False
 
     for cid in self._topological_sort():
       self.components[cid].compute()
 
     for wire in self.wires:
-      src_comp_id, src_pin_name = wire.src_pin_id.split(".")
-      dst_comp_id, dst_pin_name = wire.dst_pin_id.split(".")
+      src_comp_id, src_pin_name = wire.src_id, wire.src_pin
+      dst_comp_id, dst_pin_name = wire.dst_id, wire.dst_pin
 
       value = self.components[src_comp_id].outputs[src_pin_name].value
 
